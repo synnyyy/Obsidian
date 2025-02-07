@@ -10,7 +10,7 @@ local iconRegistry: { [number]: { number | { number } } } = icons[3]
 -- so optimised
 if not isfile("Pulse Assets/IconSprite.png") then
     makefolder("Pulse Assets/")
-	writefile("Pulse Assets/IconSprite.png", game:HttpGet("https://tr.rbxcdn.com/180DAY-80c81ca9b09af37b99b53b2b2b18c825/420/420/Image/Webp/noFilter"))
+	writefile("Pulse Assets/IconSprite.png", game:HttpGet("https://assetdelivery.roblox.com/v1/asset/?id=103134660123798"))
 end
 
 Lucide.Icons = iconIndices
