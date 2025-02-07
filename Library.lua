@@ -455,12 +455,15 @@ local FetchIcons, Icons = pcall(function()
 end)
 function Library:GetIcon(IconName: string)
 	if not FetchIcons then
+		print("Wtf")
 		return
 	end
 	local Success, Icon = pcall(Icons.GetAsset, IconName)
 	if not Success then
+		warn(Success, Icon)
 		return
 	end
+	print(Success, Icon)
 	return Icon
 end
 
