@@ -3971,12 +3971,20 @@ function Library:CreateWindow(WindowInfo)
 		})
 
 		if WindowInfo.Icon then
-			New("ImageLabel", {
-				Image = tonumber(WindowInfo.Icon) and "rbxassetid://" .. WindowInfo.Icon or WindowInfo.Icon,
+			local IconImage = tonumber(WindowInfo.Icon) and "rbxassetid://" .. WindowInfo.Icon or Library:GetIcon(WindowInfo.Icon) or WindowInfo.Icon
+			local IconLabel = New("ImageLabel", {
+				Image = IconImage,
 				Size = WindowInfo.IconSize,
 				Parent = TitleHolder,
 			})
+		
+			local RetrievedIcon = Library:GetIcon(WindowInfo.Icon)
+			if RetrievedIcon then
+				IconLabel.ImageRectOffset = SearchIcon.ImageRectOffset
+				IconLabel.ImageRectSize = SearchIcon.ImageRectSize
+			end
 		end
+		
 
 		local X = Library:GetTextBounds(
 			WindowInfo.Title,
