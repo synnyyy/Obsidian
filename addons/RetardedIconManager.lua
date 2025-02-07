@@ -10,7 +10,7 @@ local iconRegistry: { [number]: { number | { number } } } = icons[3]
 -- so optimised
 if not isfile("Pulse Assets/IconSprite.png") then
     makefolder("Pulse Assets/")
-	writefile("Pulse Assets/IconSprite.png", game:HttpGet("https://media.discordapp.net/attachments/1284248003376578692/1337524484973793310/Z9qDD0v.png?ex=67a7c23f&is=67a670bf&hm=604db8ebd6de3c0f251483890372cc83dffad954e08180a086f38cfd838dc83d&=&format=webp&quality=lossless&width=840&height=840"))
+	writefile("Pulse Assets/IconSprite.png", game:HttpGet("https://i.e-z.gg/8a2ru251.png"))
 end
 
 Lucide.Icons = iconIndices
