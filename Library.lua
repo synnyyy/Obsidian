@@ -100,6 +100,12 @@ else
 	Library.MinSize = Library.IsMobile and Vector2.new(480, 240) or Vector2.new(480, 360)
 end
 
+if not isfolder("Pulse Assets") then
+	makefolder("Pulse Assets")
+	writefile("Pulse Assets/Tiles.png", game:HttpGet("https://r2.e-z.host/758bfc8b-9659-4f8e-9a2c-379ff7f2f32c/pwro190p.png"))
+	writefile("Pulse Assets/Gradient.png", game:HttpGet("https://r2.e-z.host/758bfc8b-9659-4f8e-9a2c-379ff7f2f32c/oo75e506.png"))
+end
+
 local Templates = {
 	--// UI \\-
 	Frame = {
@@ -444,7 +450,7 @@ end
 
 local FetchIcons, Icons = pcall(function()
 	return loadstring(
-		game:HttpGet("https://raw.githubusercontent.com/deividcomsono/lucide-roblox-direct/refs/heads/main/source.lua")
+		game:HttpGet("https://raw.githubusercontent.com/synnyyy/Obsidian/refs/heads/main/addons/RetardedIconManager.lua")
 	)()
 end)
 function Library:GetIcon(IconName: string)
@@ -1615,7 +1621,7 @@ do
 		})
 
 		local HolderTransparency = New("ImageLabel", {
-			Image = "rbxassetid://139785960036434",
+			Image = getcustomasset("Pulse Assets/Tiles.png"),
 			ImageTransparency = (1 - ColorPicker.Transparency),
 			ScaleType = Enum.ScaleType.Tile,
 			Size = UDim2.fromScale(1, 1),
@@ -1668,7 +1674,7 @@ do
 		--// Sat Map
 		local SatVipMap = New("ImageButton", {
 			BackgroundColor3 = ColorPicker.Value,
-			Image = "rbxassetid://4155801252",
+			Image = getcustomasset("Pulse Assets/Gradient.png"),
 			Size = UDim2.fromOffset(200, 200),
 			Parent = ColorHolder,
 		})
@@ -1714,7 +1720,7 @@ do
 		local TransparencySelector, TransparencyColor, TransparencyCursor
 		if Info.Transparency then
 			TransparencySelector = New("ImageButton", {
-				Image = "rbxassetid://139785960036434",
+				Image = getcustomasset("Pulse Assets/Tiles.png"),
 				ScaleType = Enum.ScaleType.Tile,
 				Size = UDim2.fromOffset(16, 200),
 				TileSize = UDim2.fromOffset(8, 8),
