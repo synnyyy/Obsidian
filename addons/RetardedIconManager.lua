@@ -10,7 +10,7 @@ local iconRegistry: { [number]: { number | { number } } } = icons[3]
 -- so optimised
 if not isfile("Pulse Assets/IconSprite.png") then
     makefolder("Pulse Assets/")
-	writefile("Pulse Assets/IconSprite.png", game:HttpGet("https://r2.e-z.host/758bfc8b-9659-4f8e-9a2c-379ff7f2f32c/8a2ru251.png"))
+	writefile("Pulse Assets/IconSprite.png", game:HttpGet("https://tr.rbxcdn.com/180DAY-80c81ca9b09af37b99b53b2b2b18c825/420/420/Image/Webp/noFilter"))
 end
 
 Lucide.Icons = iconIndices
