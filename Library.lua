@@ -18,6 +18,10 @@ local TweenService: TweenService = cloneref(game:GetService("TweenService"))
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 
+if not isfolder("Pulse Assets") then
+	writefolder("Pulse Assets")
+end
+
 local Labels = {}
 local Buttons = {}
 local Toggles = {}
