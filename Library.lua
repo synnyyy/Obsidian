@@ -680,15 +680,21 @@ function Library:SafeCallback(Func: (...any) -> ...any, ...: any)
 		return Response
 	end
 
+	Response = tostring(Response or "You're done buddy")
+
 	local Traceback = debug.traceback():gsub("\n", " ")
 	local _, i = Traceback:find(":%d+ ")
-	Traceback = Traceback:sub(i + 1):gsub(" :", ":")
+	Traceback = i and Traceback:sub(i + 1):gsub(" :", ":") or Traceback
 
-	task.defer(error, Response .. " - " .. Traceback)
+	task.defer(function()
+		error(Response .. " - " .. Traceback, 2)  
+	end)
+
 	if Library.NotifyOnError then
 		Library:Notify(Response)
 	end
 end
+
 
 function Library:MakeDraggable(UI: GuiObject, DragFrame: GuiObject, IgnoreToggled: boolean?, IsMainWindow: boolean?)
 	local StartPos
