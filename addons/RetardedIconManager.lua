@@ -12,6 +12,7 @@ if not isfile("Rift Assets/IconSprite.png") then
     makefolder("Rift Assets/")
 	writefile("Rift Assets/IconSprite.png", game:HttpGet("https://assetdelivery.roblox.com/v1/asset/?id=103134660123798"))
 end
+local Sprite = getcustomasset("Rift Assets/IconSprite.png")
 
 Lucide.Icons = iconIndices
 function Lucide.GetAsset(name: string)
@@ -40,7 +41,7 @@ function Lucide.GetAsset(name: string)
 		return {
 			IconName = name,
 			Id = tonumber(idIndices[icon[1]]),
-			Url = getcustomasset("Pulse Assets/IconSprite.png"),
+			Url = Sprite,
 			ImageRectSize = Vector2.new(icon[2][1], icon[2][2]),
 			ImageRectOffset = Vector2.new(icon[3][1], icon[3][2]),
 		}
