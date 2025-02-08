@@ -671,8 +671,7 @@ function Library:MouseIsOverFrame(Frame: GuiObject, Mouse: Vector2): boolean
 end
 
 function Library:SafeCallback(Func: (...any) -> ...any, ...: any)
-	if typeof(Func) ~= "function" then
-		warn("[SafeCallback] Attempted to call a non-function:", typeof(Func), Func)
+	if not (Func and typeof(Func) == "function") then
 		return
 	end
 
@@ -681,23 +680,11 @@ function Library:SafeCallback(Func: (...any) -> ...any, ...: any)
 		return Response
 	end
 
-	-- Ensure Response is always a string
-	Response = tostring(Response or "Unknown error")
-
-	-- Generate proper traceback
 	local Traceback = debug.traceback():gsub("\n", " ")
 	local _, i = Traceback:find(":%d+ ")
-	Traceback = i and Traceback:sub(i + 1):gsub(" :", ":") or Traceback
+	Traceback = Traceback:sub(i + 1):gsub(" :", ":")
 
-	-- Log the error before deferring
-	warn("[SafeCallback] Error occurred:", Response, "\nTraceback:", Traceback)
-
-	-- Properly handle the error
-	task.defer(function()
-		error(Response .. " - " .. Traceback, 2)
-	end)
-
-	-- Optional notification on error
+	task.defer(error, Response .. " - " .. Traceback)
 	if Library.NotifyOnError then
 		Library:Notify(Response)
 	end
