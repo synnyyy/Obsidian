@@ -8,9 +8,9 @@ local idIndices: { string } = icons[2]
 local iconRegistry: { [number]: { number | { number } } } = icons[3]
 
 -- so optimised
-if not isfile("Pulse Assets/IconSprite.png") then
-    makefolder("Pulse Assets/")
-	writefile("Pulse Assets/IconSprite.png", game:HttpGet("https://assetdelivery.roblox.com/v1/asset/?id=103134660123798"))
+if not isfile("Rift Assets/IconSprite.png") then
+    makefolder("Rift Assets/")
+	writefile("Rift Assets/IconSprite.png", game:HttpGet("https://assetdelivery.roblox.com/v1/asset/?id=103134660123798"))
 end
 
 Lucide.Icons = iconIndices
