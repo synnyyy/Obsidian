@@ -3969,6 +3969,25 @@ function Library:CreateWindow(WindowInfo)
 			Parent = TitleHolder,
 		})
 
+		local CreateGradientTransition = function(Gradient)
+			while Gradient.Parent do
+				local TweenForward = TweenService:Create(Gradient, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+					Offset = Vector2.new(1, 0)
+				})
+				local TweenBackward = TweenService:Create(Gradient, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+					Offset = Vector2.new(-1, 0)
+				})
+		
+				TweenForward:Play()
+				TweenForward.Completed:Wait()
+		
+				if not Gradient.Parent then break end
+		
+				TweenBackward:Play()
+				TweenBackward.Completed:Wait()
+			end
+		end
+		
 		if WindowInfo.Icon then
 			local IconImage = tonumber(WindowInfo.Icon) and "rbxassetid://" .. WindowInfo.Icon or Library:GetIcon(WindowInfo.Icon) or WindowInfo.Icon
 			local IconLabel = New("ImageLabel", {
@@ -3978,6 +3997,19 @@ function Library:CreateWindow(WindowInfo)
 				Parent = TitleHolder,
 			})
 		
+			local IconGradient = New("UIGradient", {
+				Color = ColorSequence.new({
+					ColorSequenceKeypoint.new(0, Library.Scheme.AccentColor:Lerp(Color3.new(0, 0, 0), 0.3)),
+					ColorSequenceKeypoint.new(1, Library.Scheme.AccentColor)
+				}),
+				Rotation = 90,
+				Parent = IconLabel
+			})
+		
+			task.spawn(function()
+				CreateGradientTransition(IconGradient)
+			end)
+		
 			local RetrievedIcon = Library:GetIcon(WindowInfo.Icon)
 			if RetrievedIcon then
 				IconLabel.ImageRectOffset = SearchIcon.ImageRectOffset
@@ -3985,14 +4017,13 @@ function Library:CreateWindow(WindowInfo)
 			end
 		end
 		
-
 		local X = Library:GetTextBounds(
 			WindowInfo.Title,
 			Library.Scheme.Font,
 			20,
 			TitleHolder.AbsoluteSize.X - (WindowInfo.Icon and WindowInfo.IconSize.X.Offset + 6 or 0) - 12
 		)
-
+		
 		local TextLabel = New("TextLabel", {
 			BackgroundTransparency = 1,
 			Size = UDim2.new(0, X, 1, 0),
@@ -4000,18 +4031,22 @@ function Library:CreateWindow(WindowInfo)
 			TextColor3 = Color3.new(1, 1, 1),
 			RichText = true,
 			TextSize = 20,
+			Font = Enum.Font.GothamBold,
 			Parent = TitleHolder,
 		})
-
+		
 		local Gradient = New("UIGradient", {
 			Color = ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Library.Scheme.AccentColor),
-				ColorSequenceKeypoint.new(1, Library.Scheme.AccentColor:Lerp(Color3.new(1, 1, 1), 0.5)) -- Lighter shade
+				ColorSequenceKeypoint.new(0, Library.Scheme.AccentColor:Lerp(Color3.new(0, 0, 0), 0.3)),
+				ColorSequenceKeypoint.new(1, Library.Scheme.AccentColor)
 			}),
-			Rotation = 90, 
+			Rotation = 90,
 			Parent = TextLabel
 		})
-
+		
+		task.spawn(function()
+			CreateGradientTransition(Gradient)
+		end)
 
 		--// Search Box
 		SearchBox = New("TextBox", {
