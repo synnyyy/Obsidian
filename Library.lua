@@ -3969,22 +3969,13 @@ function Library:CreateWindow(WindowInfo)
 			Parent = TitleHolder,
 		})
 
-		local CreateGradientTransition = function(Gradient)
-			while Gradient.Parent do
-				local TweenForward = TweenService:Create(Gradient, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
-					Offset = Vector2.new(1, 0)
+		local function CreateGradientTransition(gradient)
+			while gradient.Parent do
+				local Tween = TweenService:Create(gradient, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+					Rotation = gradient.Rotation == 90 and -90 or 90
 				})
-				local TweenBackward = TweenService:Create(Gradient, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
-					Offset = Vector2.new(-1, 0)
-				})
-		
-				TweenForward:Play()
-				TweenForward.Completed:Wait()
-		
-				if not Gradient.Parent then break end
-		
-				TweenBackward:Play()
-				TweenBackward.Completed:Wait()
+				Tween:Play()
+				Tween.Completed:Wait()
 			end
 		end
 		
@@ -3999,8 +3990,8 @@ function Library:CreateWindow(WindowInfo)
 		
 			local IconGradient = New("UIGradient", {
 				Color = ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Library.Scheme.AccentColor:Lerp(Color3.new(0, 0, 0), 0.3)),
-					ColorSequenceKeypoint.new(1, Library.Scheme.AccentColor)
+					ColorSequenceKeypoint.new(0, Library.Scheme.AccentColor),
+					ColorSequenceKeypoint.new(1, Library.Scheme.AccentColor:Lerp(Color3.new(0, 0, 0), 0.1))
 				}),
 				Rotation = 90,
 				Parent = IconLabel
@@ -4037,8 +4028,8 @@ function Library:CreateWindow(WindowInfo)
 		
 		local Gradient = New("UIGradient", {
 			Color = ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Library.Scheme.AccentColor:Lerp(Color3.new(0, 0, 0), 0.3)),
-				ColorSequenceKeypoint.new(1, Library.Scheme.AccentColor)
+				ColorSequenceKeypoint.new(0, Library.Scheme.AccentColor),
+				ColorSequenceKeypoint.new(1, Library.Scheme.AccentColor:Lerp(Color3.new(0, 0, 0), 0.1))
 			}),
 			Rotation = 90,
 			Parent = TextLabel
