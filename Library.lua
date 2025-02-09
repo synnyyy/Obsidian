@@ -3996,9 +3996,7 @@ function Library:CreateWindow(WindowInfo)
 		New("TextLabel", {
 			BackgroundTransparency = 1,
 			Size = UDim2.new(0, X, 1, 0),
-			Text = "<b>" .. WindowInfo.Title .. "</b>",
-			RichText = true,
-			TextSize = 20,
+			Text = WindowInfo.Title,
 			Parent = TitleHolder,
 		})
 		
