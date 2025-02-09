@@ -3974,7 +3974,7 @@ function Library:CreateWindow(WindowInfo)
 			local IconLabel = New("ImageLabel", {
 				Image = IconImage,
 				Size = WindowInfo.IconSize,
-				ImageColor = Library.Scheme.AccentColor,
+				ImageColor3 = Library.Scheme.AccentColor,
 				Parent = TitleHolder,
 			})
 		
