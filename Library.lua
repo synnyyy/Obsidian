@@ -3992,15 +3992,26 @@ function Library:CreateWindow(WindowInfo)
 			20,
 			TitleHolder.AbsoluteSize.X - (WindowInfo.Icon and WindowInfo.IconSize.X.Offset + 6 or 0) - 12
 		)
-		New("TextLabel", {
+
+		local TextLabel = New("TextLabel", {
 			BackgroundTransparency = 1,
 			Size = UDim2.new(0, X, 1, 0),
-			Text = WindowInfo.Title,
-			TextColor = Library.Scheme.AccentColor,
+			Text = "<b>" .. WindowInfo.Title .. "</b>",
+			TextColor3 = Color3.new(1, 1, 1),
 			RichText = true,
 			TextSize = 20,
 			Parent = TitleHolder,
 		})
+
+		local Gradient = New("UIGradient", {
+			Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Library.Scheme.AccentColor),
+				ColorSequenceKeypoint.new(1, Library.Scheme.AccentColor:Lerp(Color3.new(1, 1, 1), 0.5)) -- Lighter shade
+			}),
+			Rotation = 90, 
+			Parent = TextLabel
+		})
+
 
 		--// Search Box
 		SearchBox = New("TextBox", {
