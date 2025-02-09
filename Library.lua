@@ -3997,10 +3997,10 @@ function Library:CreateWindow(WindowInfo)
 			BackgroundTransparency = 1,
 			Size = UDim2.new(0, X, 1, 0),
 			Text = WindowInfo.Title,
+			TextSize = 20,
 			Parent = TitleHolder,
 		})
 		
-
 		--// Search Box
 		SearchBox = New("TextBox", {
 			AnchorPoint = Vector2.new(0, 0.5),
