@@ -104,9 +104,9 @@ end
 
 if not isfolder("Rift Assets") then
 	makefolder("Rift Assets")
-	writefile("Rift Assets/Tiles.png", game:HttpGet("https://r2.e-z.host/758bfc8b-9659-4f8e-9a2c-379ff7f2f32c/pwro190p.png"))
-	writefile("Rift Assets/Gradient.png", game:HttpGet("https://r2.e-z.host/758bfc8b-9659-4f8e-9a2c-379ff7f2f32c/oo75e506.png"))
-	writefile("Rift Assets/Logo.png", game:HttpGet("https://r2.e-z.host/758bfc8b-9659-4f8e-9a2c-379ff7f2f32c/cdmsmmkf.png"))
+	writefile("Rift Assets/Tiles.png", game:HttpGet("https://raw.githubusercontent.com/Synergy-Networks/products/refs/heads/main/Rift/Assets/Tiles.png"))
+	writefile("Rift Assets/Gradient.png", game:HttpGet("https://raw.githubusercontent.com/Synergy-Networks/products/refs/heads/main/Rift/Assets/Gradient.png"))
+	writefile("Rift Assets/Logo.png", game:HttpGet("https://raw.githubusercontent.com/Synergy-Networks/products/refs/heads/main/Rift/Assets/Logo.png"))
 end
 
 local Templates = {
