@@ -10,7 +10,7 @@ local iconRegistry: { [number]: { number | { number } } } = icons[3]
 -- so optimised
 if not isfile("Rift Assets/IconSprite.png") then
     makefolder("Rift Assets/")
-	writefile("Rift Assets/IconSprite.png", game:HttpGet("https://assetdelivery.roblox.com/v1/asset/?id=103134660123798"))
+	writefile("Rift Assets/IconSprite.png", game:HttpGet("https://raw.githubusercontent.com/Synergy-Networks/products/refs/heads/main/Rift/Assets/IconSprite.png"))
 end
 local Sprite = getcustomasset("Rift Assets/IconSprite.png")
 
