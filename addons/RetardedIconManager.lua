@@ -8,14 +8,14 @@ local idIndices: { string } = icons[2]
 local iconRegistry: { [number]: { number | { number } } } = icons[3]
 
 -- so optimised
-if not isfile("Rift Assets/IconSprite.png") then
-    makefolder("Rift Assets/")
-    writefile("Rift Assets/IconSprite.png", game:HttpGet("https://raw.githubusercontent.com/Synergy-Networks/products/refs/heads/main/Rift/Assets/IconSprite.png"))
+if not isfile("RiftAssets/IconSprite.png") then
+    makefolder("RiftAssets/")
+    writefile("RiftAssets/IconSprite.png", game:HttpGet("https://raw.githubusercontent.com/Synergy-Networks/products/refs/heads/main/Rift/Assets/IconSprite.png"))
 end
 
-repeat task.wait() until isfile("Rift Assets/IconSprite.png")
+repeat task.wait() until isfile("RiftAssets/IconSprite.png")
 
-local Sprite = getcustomasset("Rift Assets/IconSprite.png")
+local Sprite = getcustomasset("RiftAssets/IconSprite.png")
 
 Lucide.Icons = iconIndices
 function Lucide.GetAsset(name: string)
