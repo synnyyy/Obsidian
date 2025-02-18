@@ -102,14 +102,14 @@ else
 	Library.MinSize = Library.IsMobile and Vector2.new(480, 240) or Vector2.new(480, 360)
 end
 
-if not isfolder("Rift Assets") then
-	makefolder("Rift Assets")
-	writefile("Rift Assets/Tiles.png", game:HttpGet("https://raw.githubusercontent.com/Synergy-Networks/products/refs/heads/main/Rift/Assets/Tiles.png"))
-	writefile("Rift Assets/Gradient.png", game:HttpGet("https://raw.githubusercontent.com/Synergy-Networks/products/refs/heads/main/Rift/Assets/Gradient.png"))
-	writefile("Rift Assets/Logo.png", game:HttpGet("https://raw.githubusercontent.com/Synergy-Networks/products/refs/heads/main/Rift/Assets/Logo.png"))
+if not isfolder("RiftAssets") then
+	makefolder("RiftAssets")
+	writefile("RiftAssets/Tiles.png", game:HttpGet("https://raw.githubusercontent.com/Synergy-Networks/products/refs/heads/main/Rift/Assets/Tiles.png"))
+	writefile("RiftAssets/Gradient.png", game:HttpGet("https://raw.githubusercontent.com/Synergy-Networks/products/refs/heads/main/Rift/Assets/Gradient.png"))
+	writefile("RiftAssets/Logo.png", game:HttpGet("https://raw.githubusercontent.com/Synergy-Networks/products/refs/heads/main/Rift/Assets/Logo.png"))
 end
 
-repeat task.wait() until isfile("Rift Assets/Tiles.png") and isfile("Rift Assets/Gradient.png") and isfile("Rift Assets/Logo.png")
+repeat task.wait() until isfile("RiftAssets/Tiles.png") and isfile("RiftAssets/Gradient.png") and isfile("RiftAssets/Logo.png")
 local Templates = {
 	--// UI \\-
 	Frame = {
@@ -1626,7 +1626,7 @@ do
 		})
 
 		local HolderTransparency = New("ImageLabel", {
-			Image = getcustomasset("Rift Assets/Tiles.png"),
+			Image = getcustomasset("RiftAssets/Tiles.png"),
 			ImageTransparency = (1 - ColorPicker.Transparency),
 			ScaleType = Enum.ScaleType.Tile,
 			Size = UDim2.fromScale(1, 1),
@@ -1679,7 +1679,7 @@ do
 		--// Sat Map
 		local SatVipMap = New("ImageButton", {
 			BackgroundColor3 = ColorPicker.Value,
-			Image = getcustomasset("Rift Assets/Gradient.png"),
+			Image = getcustomasset("RiftAssets/Gradient.png"),
 			Size = UDim2.fromOffset(200, 200),
 			Parent = ColorHolder,
 		})
@@ -1725,7 +1725,7 @@ do
 		local TransparencySelector, TransparencyColor, TransparencyCursor
 		if Info.Transparency then
 			TransparencySelector = New("ImageButton", {
-				Image = getcustomasset("Rift Assets/Tiles.png"),
+				Image = getcustomasset("RiftAssets/Tiles.png"),
 				ScaleType = Enum.ScaleType.Tile,
 				Size = UDim2.fromOffset(16, 200),
 				TileSize = UDim2.fromOffset(8, 8),
