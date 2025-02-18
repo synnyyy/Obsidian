@@ -109,6 +109,7 @@ if not isfolder("Rift Assets") then
 	writefile("Rift Assets/Logo.png", game:HttpGet("https://raw.githubusercontent.com/Synergy-Networks/products/refs/heads/main/Rift/Assets/Logo.png"))
 end
 
+repeat task.wait() until isfile("Rift Assets/Tiles.png") and isfile("Rift Assets/Gradient.png") and isfile("Rift Assets/Logo.png")
 local Templates = {
 	--// UI \\-
 	Frame = {
