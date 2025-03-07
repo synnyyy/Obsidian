@@ -3689,178 +3689,211 @@ end
 
 function Library:Notify(...)
 	local Data = {}
-	local Info = select(1, ...)
+    local Info = select(1, ...)
 
-	if typeof(Info) == "table" then
-		Data.Title = tostring(Info.Title)
-		Data.Description = tostring(Info.Description)
-		Data.Time = Info.Time or 5
-		Data.SoundId = Info.SoundId
-	else
-		Data.Description = tostring(Info)
-		Data.Time = select(2, ...) or 5
-		Data.SoundId = select(3, ...)
-	end
+    if typeof(Info) == "table" then
+        Data.Title = tostring(Info.Title)
+        Data.Description = tostring(Info.Description)
+        Data.Time = Info.Time or 5
+        Data.SoundId = Info.SoundId
+        Data.Steps = Info.Steps
+    else
+        Data.Description = tostring(Info)
+        Data.Time = select(2, ...) or 5
+        Data.SoundId = select(3, ...)
+    end
 
-	local FakeBackground = New("Frame", {
-		AutomaticSize = Enum.AutomaticSize.Y,
-		BackgroundTransparency = 1,
-		Size = UDim2.fromScale(1, 0),
-		Visible = false,
-		Parent = NotificationArea,
+    local FakeBackground = New("Frame", {
+        AutomaticSize = Enum.AutomaticSize.Y,
+        BackgroundTransparency = 1,
+        Size = UDim2.fromScale(1, 0),
+        Visible = false,
+        Parent = NotificationArea,
 
-		DPIExclude = {
-			Size = true,
-		},
-	})
+        DPIExclude = {
+            Size = true,
+        },
+    })
 
-	local Background = Library:MakeOutline(FakeBackground, Library.CornerRadius, 5)
-	Background.AutomaticSize = Enum.AutomaticSize.Y
-	Background.Position = Library.NotifySide:lower() == "left" and UDim2.new(-1, -6, 0, -2) or UDim2.new(1, 6, 0, -2)
-	Background.Size = UDim2.fromScale(1, 0)
-	Library:UpdateDPI(Background, {
-		Position = false,
-		Size = false,
-	})
+    local Background = Library:MakeOutline(FakeBackground, Library.CornerRadius, 5)
+    Background.AutomaticSize = Enum.AutomaticSize.Y
+    Background.Position = Library.NotifySide:lower() == "left" and UDim2.new(-1, -6, 0, -2) or UDim2.new(1, 6, 0, -2)
+    Background.Size = UDim2.fromScale(1, 0)
+    Library:UpdateDPI(Background, {
+        Position = false,
+        Size = false,
+    })
 
-	local Holder = New("Frame", {
-		BackgroundColor3 = "MainColor",
-		Position = UDim2.fromOffset(2, 2),
-		Size = UDim2.new(1, -4, 1, -4),
-		Parent = Background,
-	})
-	New("UICorner", {
-		CornerRadius = UDim.new(0, Library.CornerRadius - 1),
-		Parent = Holder,
-	})
-	New("UIListLayout", {
-		Padding = UDim.new(0, 4),
-		Parent = Holder,
-	})
-	New("UIPadding", {
-		PaddingBottom = UDim.new(0, 8),
-		PaddingLeft = UDim.new(0, 8),
-		PaddingRight = UDim.new(0, 8),
-		PaddingTop = UDim.new(0, 8),
-		Parent = Holder,
-	})
+    local Holder = New("Frame", {
+        BackgroundColor3 = "MainColor",
+        Position = UDim2.fromOffset(2, 2),
+        Size = UDim2.new(1, -4, 1, -4),
+        Parent = Background,
+    })
+    New("UICorner", {
+        CornerRadius = UDim.new(0, Library.CornerRadius - 1),
+        Parent = Holder,
+    })
+    New("UIListLayout", {
+        Padding = UDim.new(0, 4),
+        Parent = Holder,
+    })
+    New("UIPadding", {
+        PaddingBottom = UDim.new(0, 8),
+        PaddingLeft = UDim.new(0, 8),
+        PaddingRight = UDim.new(0, 8),
+        PaddingTop = UDim.new(0, 8),
+        Parent = Holder,
+    })
 
-	local Title
-	local Desc
-	local TitleX = 0
-	local DescX = 0
+    local Title
+    local Desc
+    local TitleX = 0
+    local DescX = 0
 
-	if Data.Title then
-		Title = New("TextLabel", {
-			BackgroundTransparency = 1,
-			Text = Data.Title,
-			TextSize = 15,
-			TextXAlignment = Enum.TextXAlignment.Left,
-			TextWrapped = true,
-			Parent = Holder,
+    local TimerFill
 
-			DPIExclude = {
-				Size = true,
-			},
-		})
-	end
-	if Data.Description then
-		Desc = New("TextLabel", {
-			BackgroundTransparency = 1,
-			Text = Data.Description,
-			TextSize = 14,
-			TextXAlignment = Enum.TextXAlignment.Left,
-			TextWrapped = true,
-			Parent = Holder,
+    if Data.Title then
+        Title = New("TextLabel", {
+            BackgroundTransparency = 1,
+            Text = Data.Title,
+            TextSize = 15,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            TextWrapped = true,
+            Parent = Holder,
 
-			DPIExclude = {
-				Size = true,
-			},
-		})
-	end
+            DPIExclude = {
+                Size = true,
+            },
+        })
+    end
+    if Data.Description then
+        Desc = New("TextLabel", {
+            BackgroundTransparency = 1,
+            Text = Data.Description,
+            TextSize = 14,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            TextWrapped = true,
+            Parent = Holder,
 
-	function Data:Resize()
-		if Title then
-			local X, Y = Library:GetTextBounds(
-				Title.Text,
-				Title.FontFace,
-				Title.TextSize,
-				NotificationArea.AbsoluteSize.X - (24 * Library.DPIScale)
-			)
-			Title.Size = UDim2.fromOffset(math.ceil(X), Y)
-			TitleX = X
-		end
-		if Desc then
-			local X, Y = Library:GetTextBounds(
-				Desc.Text,
-				Desc.FontFace,
-				Desc.TextSize,
-				NotificationArea.AbsoluteSize.X - (24 * Library.DPIScale)
-			)
-			Desc.Size = UDim2.fromOffset(math.ceil(X), Y)
-			DescX = X
-		end
+            DPIExclude = {
+                Size = true,
+            },
+        })
+    end
 
-		FakeBackground.Size = UDim2.fromOffset((TitleX > DescX and TitleX or DescX) + (24 * Library.DPIScale), 0)
-	end
-	Data:Resize()
+    function Data:Resize()
+        if Title then
+            local X, Y = Library:GetTextBounds(
+                Title.Text,
+                Title.FontFace,
+                Title.TextSize,
+                NotificationArea.AbsoluteSize.X - (24 * Library.DPIScale)
+            )
+            Title.Size = UDim2.fromOffset(math.ceil(X), Y)
+            TitleX = X
+        end
 
-	local TimerHolder = New("Frame", {
-		BackgroundTransparency = 1,
-		Size = UDim2.new(1, 0, 0, 7),
-		Visible = typeof(Data.Time) ~= "Instance",
-		Parent = Holder,
-	})
-	local TimerBar = New("Frame", {
-		BackgroundColor3 = "BackgroundColor",
-		BorderColor3 = "OutlineColor",
-		BorderSizePixel = 1,
-		Position = UDim2.fromOffset(0, 3),
-		Size = UDim2.new(1, 0, 0, 2),
-		Parent = TimerHolder,
-	})
-	local TimerFill = New("Frame", {
-		BackgroundColor3 = "AccentColor",
-		Size = UDim2.fromScale(1, 1),
-		Parent = TimerBar,
-	})
+        if Desc then
+            local X, Y = Library:GetTextBounds(
+                Desc.Text,
+                Desc.FontFace,
+                Desc.TextSize,
+                NotificationArea.AbsoluteSize.X - (24 * Library.DPIScale)
+            )
+            Desc.Size = UDim2.fromOffset(math.ceil(X), Y)
+            DescX = X
+        end
 
-	if Data.SoundId then
-		New("Sound", {
-			SoundId = "rbxassetid://" .. tostring(Data.SoundId):gsub("rbxassetid://", ""),
-			Volume = 3,
-			PlayOnRemove = true,
-			Parent = SoundService,
-		}):Destroy()
-	end
+        FakeBackground.Size = UDim2.fromOffset((TitleX > DescX and TitleX or DescX) + (24 * Library.DPIScale), 0)
+    end
 
-	Library.Notifications[FakeBackground] = Data
+    function Data:ChangeTitle(NewText)
+        if Title then
+            Data.Title = tostring(NewText)
+            Title.Text = Data.Title
+            Data:Resize()
+        end
+    end
 
-	FakeBackground.Visible = true
-	TweenService:Create(Background, Library.NotifyTweenInfo, {
-		Position = UDim2.fromOffset(-2, -2),
-	}):Play()
+    function Data:ChangeDescription(NewText)
+        if Desc then
+            Data.Description = tostring(NewText)
+            Desc.Text = Data.Description
+            Data:Resize()
+        end
+    end
 
-	task.delay(Library.NotifyTweenInfo.Time, function()
-		if typeof(Data.Time) == "Instance" then
-			Data.Time.Destroying:Wait()
-		else
-			TweenService
-				:Create(TimerFill, TweenInfo.new(Data.Time, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {
-					Size = UDim2.fromScale(0, 1),
-				})
-				:Play()
-			task.wait(Data.Time)
-		end
+    function Data:ChangeStep(NewStep)
+        if TimerFill and Data.Steps then
+            NewStep = math.clamp(NewStep or 0, 0, Data.Steps)
+            TimerFill.Size = UDim2.fromScale(NewStep / Data.Steps, 1)
+        end
+    end
 
-		TweenService:Create(Background, Library.NotifyTweenInfo, {
-			Position = Library.NotifySide:lower() == "left" and UDim2.new(-1, -6, 0, -2) or UDim2.new(1, 6, 0, -2),
-		}):Play()
-		task.delay(Library.NotifyTweenInfo.Time, function()
-			Library.Notifications[FakeBackground] = nil
-			FakeBackground:Destroy()
-		end)
-	end)
+    Data:Resize()
+
+    local TimerHolder = New("Frame", {
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1, 0, 0, 7),
+        Visible = typeof(Data.Time) ~= "Instance" or typeof(Data.Steps) == "number",
+        Parent = Holder,
+    })
+    local TimerBar = New("Frame", {
+        BackgroundColor3 = "BackgroundColor",
+        BorderColor3 = "OutlineColor",
+        BorderSizePixel = 1,
+        Position = UDim2.fromOffset(0, 3),
+        Size = UDim2.new(1, 0, 0, 2),
+        Parent = TimerHolder,
+    })
+    TimerFill = New("Frame", {
+        BackgroundColor3 = "AccentColor",
+        Size = UDim2.fromScale(1, 1),
+        Parent = TimerBar,
+    })
+    
+    if typeof(Data.Time) == "Instance" then
+        TimerFill.Size = UDim2.fromScale(0, 1)
+    end
+    if Data.SoundId then
+        New("Sound", {
+            SoundId = "rbxassetid://" .. tostring(Data.SoundId):gsub("rbxassetid://", ""),
+            Volume = 3,
+            PlayOnRemove = true,
+            Parent = SoundService,
+        }):Destroy()
+    end
+
+    Library.Notifications[FakeBackground] = Data
+    
+    FakeBackground.Visible = true
+    TweenService:Create(Background, Library.NotifyTweenInfo, {
+        Position = UDim2.fromOffset(-2, -2),
+    }):Play()
+
+    task.delay(Library.NotifyTweenInfo.Time, function()
+        if typeof(Data.Time) == "Instance" then
+            Data.Time.Destroying:Wait()
+        else
+            TweenService
+                :Create(TimerFill, TweenInfo.new(Data.Time, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {
+                    Size = UDim2.fromScale(0, 1),
+                })
+                :Play()
+            task.wait(Data.Time)
+        end
+
+        TweenService:Create(Background, Library.NotifyTweenInfo, {
+            Position = Library.NotifySide:lower() == "left" and UDim2.new(-1, -6, 0, -2) or UDim2.new(1, 6, 0, -2),
+        }):Play()
+        task.delay(Library.NotifyTweenInfo.Time, function()
+            Library.Notifications[FakeBackground] = nil
+            FakeBackground:Destroy()
+        end)
+    end)
+
+    return Data
 end
 
 function Library:CreateWindow(WindowInfo)
