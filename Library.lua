@@ -4858,19 +4858,9 @@ function Library:CreateWindow(WindowInfo)
 				Text = ExecuteText,
 				TextSize = 14,
 				Parent = Holder,
+				TextEditable = ExecuteText == "Copy",  
 			})
 		
-			Box.Focused:Connect(function()
-				if Box.Text == Data.DefaultText then
-					Box.Text = ""  
-				end
-			end)
-			
-			Box.FocusLost:Connect(function(Enter)
-				if Box.Text == "" then
-					Box.Text = Data.DefaultText or "" 
-				end
-			end)
 		end
 		
 		function Tab:Resize() end
