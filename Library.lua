@@ -4858,7 +4858,7 @@ function Library:CreateWindow(WindowInfo)
 				Text = ExecuteText,
 				TextSize = 14,
 				Parent = Holder,
-				TextEditable = ExecuteText == "Copy",  
+				TextEditable = ExecuteText ~= "Copy",  
 			})
 		
 		end
