@@ -4801,82 +4801,66 @@ function Library:CreateWindow(WindowInfo)
 		}
 
 		function Tab:AddKeyBox(...)
-    local Data = {}
+			local Data = {}
 
-    local First = select(1, ...)
-    local ExecuteText = select(2, ...)
-    local IsReadOnly = select(3, ...)
+			local First = select(1, ...)
+			local ExecuteText = select(2, ...)
 
-    if typeof(First) == "function" then
-        Data.Callback = First
-    else
-        Data.ExpectedKey = First
-        Data.Callback = select(2, ...)
-    end
+			if typeof(First) == "function" then
+				Data.Callback = First
+			else
+				Data.ExpectedKey = First
+				Data.Callback = select(2, ...)
+			end
 
-    ExecuteText = ExecuteText or "Execute"
+			ExecuteText = ExecuteText or "Execute"
 
-    local Holder = New("Frame", {
-        BackgroundTransparency = 1,
-        Size = UDim2.new(0.75, 0, 0, 21),
-        Parent = TabContainer,
-    })
+			local Holder = New("Frame", {
+				BackgroundTransparency = 1,
+				Size = UDim2.new(0.75, 0, 0, 21),
+				Parent = TabContainer,
+			})
 
-    local Box = New("TextBox", {
-        BackgroundColor3 = "MainColor",
-        BorderColor3 = "OutlineColor",
-        BorderSizePixel = 1,
-        PlaceholderText = "Key",
-        Size = UDim2.new(1, -71, 1, 0),
-        TextSize = 14,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Text = IsReadOnly and "Custom Text" or "",
-        TextEditable = not IsReadOnly,
-        Parent = Holder,
-    })
-    New("UIPadding", {
-        PaddingLeft = UDim.new(0, 8),
-        PaddingRight = UDim.new(0, 8),
-        Parent = Box,
-    })
+			local Box = New("TextBox", {
+				BackgroundColor3 = "MainColor",
+				BorderColor3 = "OutlineColor",
+				BorderSizePixel = 1,
+				PlaceholderText = "Key",
+				Size = UDim2.new(1, -71, 1, 0),
+				TextSize = 14,
+				TextXAlignment = Enum.TextXAlignment.Left,
+				Parent = Holder,
+			})
+			Box.Text = Data.DefaultText or Box.Text
 
-    local ExecuteButton = New("TextButton", {
-        AnchorPoint = Vector2.new(1, 0),
-        BackgroundColor3 = "MainColor",
-        BorderColor3 = "OutlineColor",
-        BorderSizePixel = 1,
-        Position = UDim2.fromScale(1, 0),
-        Size = UDim2.new(0, 63, 1, 0),
-        Text = ExecuteText,
-        TextSize = 14,
-        Parent = Holder,
-    })
+			New("UIPadding", {
+				PaddingLeft = UDim.new(0, 8),
+				PaddingRight = UDim.new(0, 8),
+				Parent = Box,
+			})
 
-    local CopyButton = New("TextButton", {
-        AnchorPoint = Vector2.new(1, 0),
-        BackgroundColor3 = "MainColor",
-        BorderColor3 = "OutlineColor",
-        BorderSizePixel = 1,
-        Position = UDim2.fromScale(1, 0),
-        Size = UDim2.new(0, 63, 1, 0),
-        Text = "Copy",
-        TextSize = 14,
-        Parent = Holder,
-    })
+			local Button = New("TextButton", {
+				AnchorPoint = Vector2.new(1, 0),
+				BackgroundColor3 = "MainColor",
+				BorderColor3 = "OutlineColor",
+				BorderSizePixel = 1,
+				Position = UDim2.fromScale(1, 0),
+				Size = UDim2.new(0, 63, 1, 0),
+				Text = ExecuteText,
+				TextSize = 14,
+				Parent = Holder,
+			})
 
-    CopyButton.MouseButton1Click:Connect(function()
-        setclipboard(Box.Text)
-    end)
+			Button.MouseButton1Click:Connect(function()
+				if Data.ExpectedKey and Box.Text ~= Data.ExpectedKey then
+					Data.Callback(false, Box.Text)
+					return
+				end
 
-    ExecuteButton.MouseButton1Click:Connect(function()
-        if Data.ExpectedKey and Box.Text ~= Data.ExpectedKey then
-            Data.Callback(false, Box.Text)
-            return
-        end
+				Data.Callback(true, Box.Text)
+			end)
+		end
 
-        Data.Callback(true, Box.Text)
-    end)
-end
 
 
 		function Tab:Resize() end
