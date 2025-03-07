@@ -4811,7 +4811,7 @@ function Library:CreateWindow(WindowInfo)
 				Data.Callback = First
 			else
 				Data.ExpectedKey = First or ""  
-				Data.Callback = select(2, ...)
+				Data.Callback = select(4, ...)
 			end
 
 			ExecuteText = ExecuteText or "Execute"
