@@ -4802,20 +4802,20 @@ function Library:CreateWindow(WindowInfo)
 
 		function Tab:AddKeyBox(...)
 			local Data = {}
-		
+
 			local First = select(1, ...)
 			local ExecuteText = select(2, ...)
 			local DefaultText = select(3, ...)
-		
+
 			if typeof(First) == "function" then
 				Data.Callback = First
 			else
-				Data.ExpectedKey = First
+				Data.ExpectedKey = First or ""  
 				Data.Callback = select(2, ...)
 			end
-		
+
 			ExecuteText = ExecuteText or "Execute"
-			Data.DefaultText = DefaultText or ""
+			Data.DefaultText = DefaultText or ""  
 		
 			local Holder = New("Frame", {
 				BackgroundTransparency = 1,
