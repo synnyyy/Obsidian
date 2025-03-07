@@ -4805,6 +4805,7 @@ function Library:CreateWindow(WindowInfo)
 
     local First = select(1, ...)
     local ExecuteText = select(2, ...)
+    local IsReadOnly = select(3, ...)
 
     if typeof(First) == "function" then
         Data.Callback = First
@@ -4829,6 +4830,8 @@ function Library:CreateWindow(WindowInfo)
         Size = UDim2.new(1, -71, 1, 0),
         TextSize = 14,
         TextXAlignment = Enum.TextXAlignment.Left,
+        Text = IsReadOnly and "Custom Text" or "",
+        TextEditable = not IsReadOnly,
         Parent = Holder,
     })
     New("UIPadding", {
@@ -4837,7 +4840,7 @@ function Library:CreateWindow(WindowInfo)
         Parent = Box,
     })
 
-    local Button = New("TextButton", {
+    local ExecuteButton = New("TextButton", {
         AnchorPoint = Vector2.new(1, 0),
         BackgroundColor3 = "MainColor",
         BorderColor3 = "OutlineColor",
@@ -4849,7 +4852,23 @@ function Library:CreateWindow(WindowInfo)
         Parent = Holder,
     })
 
-    Button.MouseButton1Click:Connect(function()
+    local CopyButton = New("TextButton", {
+        AnchorPoint = Vector2.new(1, 0),
+        BackgroundColor3 = "MainColor",
+        BorderColor3 = "OutlineColor",
+        BorderSizePixel = 1,
+        Position = UDim2.fromScale(1, 0),
+        Size = UDim2.new(0, 63, 1, 0),
+        Text = "Copy",
+        TextSize = 14,
+        Parent = Holder,
+    })
+
+    CopyButton.MouseButton1Click:Connect(function()
+        setclipboard(Box.Text)
+    end)
+
+    ExecuteButton.MouseButton1Click:Connect(function()
         if Data.ExpectedKey and Box.Text ~= Data.ExpectedKey then
             Data.Callback(false, Box.Text)
             return
@@ -4858,6 +4877,7 @@ function Library:CreateWindow(WindowInfo)
         Data.Callback(true, Box.Text)
     end)
 end
+
 
 		function Tab:Resize() end
 
