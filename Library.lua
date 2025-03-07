@@ -4802,25 +4802,27 @@ function Library:CreateWindow(WindowInfo)
 
 		function Tab:AddKeyBox(...)
 			local Data = {}
-
+		
 			local First = select(1, ...)
 			local ExecuteText = select(2, ...)
-
+			local DefaultText = select(3, ...)
+		
 			if typeof(First) == "function" then
 				Data.Callback = First
 			else
 				Data.ExpectedKey = First
 				Data.Callback = select(2, ...)
 			end
-
+		
 			ExecuteText = ExecuteText or "Execute"
-
+			Data.DefaultText = DefaultText or ""
+		
 			local Holder = New("Frame", {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(0.75, 0, 0, 21),
 				Parent = TabContainer,
 			})
-
+		
 			local Box = New("TextBox", {
 				BackgroundColor3 = "MainColor",
 				BorderColor3 = "OutlineColor",
@@ -4829,16 +4831,16 @@ function Library:CreateWindow(WindowInfo)
 				Size = UDim2.new(1, -71, 1, 0),
 				TextSize = 14,
 				TextXAlignment = Enum.TextXAlignment.Left,
+				Text = Data.DefaultText,
 				Parent = Holder,
 			})
-			Box.Text = Data.DefaultText or Box.Text
-
+		
 			New("UIPadding", {
 				PaddingLeft = UDim.new(0, 8),
 				PaddingRight = UDim.new(0, 8),
 				Parent = Box,
 			})
-
+		
 			local Button = New("TextButton", {
 				AnchorPoint = Vector2.new(1, 0),
 				BackgroundColor3 = "MainColor",
@@ -4850,19 +4852,17 @@ function Library:CreateWindow(WindowInfo)
 				TextSize = 14,
 				Parent = Holder,
 			})
-
+		
 			Button.MouseButton1Click:Connect(function()
 				if Data.ExpectedKey and Box.Text ~= Data.ExpectedKey then
 					Data.Callback(false, Box.Text)
 					return
 				end
-
+		
 				Data.Callback(true, Box.Text)
 			end)
 		end
-
-
-
+		
 		function Tab:Resize() end
 
 		function Tab:Hover(Hovering)
