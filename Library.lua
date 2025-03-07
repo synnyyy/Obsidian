@@ -4848,7 +4848,7 @@ function Library:CreateWindow(WindowInfo)
 				Parent = Box,
 			})
 		
-			local Button = New("TextButton", {
+			local Button = New(ExecuteText == "Copy" and "TextLabel" or "TextBox", {
 				AnchorPoint = Vector2.new(1, 0),
 				BackgroundColor3 = "MainColor",
 				BorderColor3 = "OutlineColor",
@@ -4858,7 +4858,6 @@ function Library:CreateWindow(WindowInfo)
 				Text = ExecuteText,
 				TextSize = 14,
 				Parent = Holder,
-				TextEditable = ExecuteText ~= "Copy",  
 			})
 		
 		end
