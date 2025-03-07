@@ -3223,6 +3223,62 @@ do
 		return Slider
 	end
 
+    function Funcs:AddImage(Idx, Info)
+        local Groupbox = self
+        local Container = Groupbox.Container
+    
+        local Image = {
+            Image = Info.Image,
+            Size = Info.Size or UDim2.fromOffset(100, 100),
+            Position = Info.Position,
+            Visible = Info.Visible == nil and true or Info.Visible,
+            Transparency = Info.Transparency or 0,
+            ScaleType = Info.ScaleType or Enum.ScaleType.Stretch,
+            Callback = Info.Callback,
+            Type = "Image",
+        }
+    
+        local ImageHolder = New("ImageButton", {
+            BackgroundTransparency = 1,
+            Image = Image.Image,
+            ImageTransparency = Image.Transparency,
+            ScaleType = Image.ScaleType,
+            Size = Image.Size,
+            Position = Image.Position,
+            Visible = Image.Visible,
+            AutoButtonColor = false,
+            Parent = Container,
+        })
+    
+        function Image:SetImage(NewImage)
+            Image.Image = NewImage
+            ImageHolder.Image = NewImage
+        end
+    
+        function Image:SetVisible(Visible)
+            Image.Visible = Visible
+            ImageHolder.Visible = Visible
+            Groupbox:Resize()
+        end
+    
+        function Image:SetTransparency(Transparency)
+            Image.Transparency = Transparency
+            ImageHolder.ImageTransparency = Transparency
+        end
+    
+        if Image.Callback then
+            ImageHolder.MouseButton1Click:Connect(function()
+                Library:SafeCallback(Image.Callback)
+            end)
+        end
+    
+        Groupbox:Resize()
+        Image.Holder = ImageHolder
+        table.insert(Groupbox.Elements, Image)
+    
+        return Image
+    end    
+
 	function Funcs:AddDropdown(Idx, Info)
 		Info = Library:Validate(Info, Templates.Dropdown)
 
