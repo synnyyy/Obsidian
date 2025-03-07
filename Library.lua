@@ -4832,9 +4832,16 @@ function Library:CreateWindow(WindowInfo)
 				TextSize = 14,
 				TextXAlignment = Enum.TextXAlignment.Left,
 				Text = Data.DefaultText,
+				TextWrapped = true,  
 				Parent = Holder,
 			})
-		
+
+			Box.FocusLost:Connect(function(Enter)
+				if not Enter then
+					return
+				end
+			end)
+			
 			New("UIPadding", {
 				PaddingLeft = UDim.new(0, 8),
 				PaddingRight = UDim.new(0, 8),
