@@ -4803,15 +4803,14 @@ function Library:CreateWindow(WindowInfo)
 		function Tab:AddKeyBox(...)
 			local Data = {}
 
-			local First = select(1, ...)
-			local ExecuteText = select(2, ...)
-			local DefaultText = select(3, ...)
+			local ExecuteText = select(1, ...)
+			local DefaultText = select(2, ...)
 
 			if typeof(First) == "function" then
 				Data.Callback = First
 			else
 				Data.ExpectedKey = First or ""  
-				Data.Callback = select(4, ...)
+				Data.Callback = select(3, ...)
 			end
 
 			ExecuteText = ExecuteText or "Execute"
@@ -4823,7 +4822,7 @@ function Library:CreateWindow(WindowInfo)
 				Parent = TabContainer,
 			})
 		
-			local Box = New("TextBox", {
+			local Box = New(Data.DefaultText == "Copy" and "TextLabel" or "TextBox", {
 				BackgroundColor3 = "MainColor",
 				BorderColor3 = "OutlineColor",
 				BorderSizePixel = 1,
@@ -4848,7 +4847,7 @@ function Library:CreateWindow(WindowInfo)
 				Parent = Box,
 			})
 		
-			local Button = New(ExecuteText == "Copy" and "TextLabel" or "TextBox", {
+			local Button = New("TextButton", {
 				AnchorPoint = Vector2.new(1, 0),
 				BackgroundColor3 = "MainColor",
 				BorderColor3 = "OutlineColor",
