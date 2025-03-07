@@ -4860,13 +4860,16 @@ function Library:CreateWindow(WindowInfo)
 				Parent = Holder,
 			})
 		
-			Button.MouseButton1Click:Connect(function()
-				if Data.ExpectedKey and Box.Text ~= Data.ExpectedKey then
-					Data.Callback(false, Box.Text)
-					return
+			Box.Focused:Connect(function()
+				if Box.Text == Data.DefaultText then
+					Box.Text = ""  
 				end
-		
-				Data.Callback(true, Box.Text)
+			end)
+			
+			Box.FocusLost:Connect(function(Enter)
+				if Box.Text == "" then
+					Box.Text = Data.DefaultText or "" 
+				end
 			end)
 		end
 		
