@@ -3227,58 +3227,77 @@ do
         local Groupbox = self
         local Container = Groupbox.Container
     
-        local Image = {
+        local ImageElement = {
             Image = Info.Image,
-            Size = Info.Size or UDim2.fromOffset(100, 100),
-            Position = Info.Position,
-            Visible = Info.Visible == nil and true or Info.Visible,
-            Transparency = Info.Transparency or 0,
+            OriginalSize = Info.OriginalSize,
             ScaleType = Info.ScaleType or Enum.ScaleType.Stretch,
-            Callback = Info.Callback,
+            Transparency = Info.Transparency or 0,
+            Visible = Info.Visible == nil and true or Info.Visible,
             Type = "Image",
+            Callback = Info.Callback
         }
+    
+        local AspectRatio = ImageElement.OriginalSize.X / ImageElement.OriginalSize.Y
+        local BaseWidth = Container.AbsoluteSize.X * 0.9
     
         local ImageHolder = New("ImageButton", {
             BackgroundTransparency = 1,
-            Image = Image.Image,
-            ImageTransparency = Image.Transparency,
-            ScaleType = Image.ScaleType,
-            Size = Image.Size,
-            Position = Image.Position,
-            Visible = Image.Visible,
+            Image = ImageElement.Image,
+            ImageTransparency = ImageElement.Transparency,
+            ScaleType = ImageElement.ScaleType,
+            Size = UDim2.new(0.9, 0, 0, BaseWidth / AspectRatio),
+            AnchorPoint = Vector2.new(0.5, 0),
+            Position = UDim2.fromScale(0.5, 0),
+            Visible = ImageElement.Visible,
             AutoButtonColor = false,
-            Parent = Container,
+            Parent = Container
         })
     
-        function Image:SetImage(NewImage)
-            Image.Image = NewImage
-            ImageHolder.Image = NewImage
+        local function UpdateSize()
+            local ContainerWidth = Container.AbsoluteSize.X * 0.9
+            local NewHeight = ContainerWidth / AspectRatio
+            ImageHolder.Size = UDim2.new(0.9, 0, 0, NewHeight)
+            Groupbox:Resize()
         end
     
-        function Image:SetVisible(Visible)
-            Image.Visible = Visible
+        Container:GetPropertyChangedSignal("AbsoluteSize"):Connect(UpdateSize)
+        Library:GiveSignal(Container:GetPropertyChangedSignal("AbsoluteSize"):Connect(UpdateSize))
+        UpdateSize()
+    
+        function ImageElement:SetImage(NewImage, NewSize)
+            ImageElement.Image = NewImage
+            ImageHolder.Image = NewImage
+            if NewSize then
+                ImageElement.OriginalSize = NewSize
+                AspectRatio = NewSize.X / NewSize.Y
+                UpdateSize()
+            end
+        end
+    
+        function ImageElement:SetVisible(Visible)
+            ImageElement.Visible = Visible
             ImageHolder.Visible = Visible
             Groupbox:Resize()
         end
     
-        function Image:SetTransparency(Transparency)
-            Image.Transparency = Transparency
+        function ImageElement:SetTransparency(Transparency)
+            ImageElement.Transparency = Transparency
             ImageHolder.ImageTransparency = Transparency
         end
     
-        if Image.Callback then
+        if ImageElement.Callback then
             ImageHolder.MouseButton1Click:Connect(function()
-                Library:SafeCallback(Image.Callback)
+                Library:SafeCallback(ImageElement.Callback)
             end)
         end
     
+        ImageElement.Holder = ImageHolder
+        table.insert(Groupbox.Elements, ImageElement)
         Groupbox:Resize()
-        Image.Holder = ImageHolder
-        table.insert(Groupbox.Elements, Image)
     
-        return Image
-    end    
-
+        return ImageElement
+    end
+    
 	function Funcs:AddDropdown(Idx, Info)
 		Info = Library:Validate(Info, Templates.Dropdown)
 
