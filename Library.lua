@@ -4804,24 +4804,27 @@ function Library:CreateWindow(WindowInfo)
             IsKeyTab = true,
         }
 
-        function Tab:AddKeyBox(...)
+          function Tab:AddKeyBox(...)
             local Data = {}
-
+        
             local First = select(1, ...)
-
+            local ExecuteText = select(2, ...)
+        
             if typeof(First) == "function" then
                 Data.Callback = First
             else
                 Data.ExpectedKey = First
                 Data.Callback = select(2, ...)
             end
-
+        
+            ExecuteText = ExecuteText or "Execute"
+        
             local Holder = New("Frame", {
                 BackgroundTransparency = 1,
                 Size = UDim2.new(0.75, 0, 0, 21),
                 Parent = TabContainer,
             })
-
+        
             local Box = New("TextBox", {
                 BackgroundColor3 = "MainColor",
                 BorderColor3 = "OutlineColor",
@@ -4837,7 +4840,7 @@ function Library:CreateWindow(WindowInfo)
                 PaddingRight = UDim.new(0, 8),
                 Parent = Box,
             })
-
+        
             local Button = New("TextButton", {
                 AnchorPoint = Vector2.new(1, 0),
                 BackgroundColor3 = "MainColor",
@@ -4845,20 +4848,21 @@ function Library:CreateWindow(WindowInfo)
                 BorderSizePixel = 1,
                 Position = UDim2.fromScale(1, 0),
                 Size = UDim2.new(0, 63, 1, 0),
-                Text = "Execute",
+                Text = ExecuteText,
                 TextSize = 14,
                 Parent = Holder,
             })
-
+        
             Button.MouseButton1Click:Connect(function()
                 if Data.ExpectedKey and Box.Text ~= Data.ExpectedKey then
                     Data.Callback(false, Box.Text)
                     return
                 end
-
+        
                 Data.Callback(true, Box.Text)
             end)
         end
+
 
         function Tab:Resize() end
 
