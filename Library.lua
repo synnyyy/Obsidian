@@ -184,19 +184,21 @@ local Templates = {
 		Visible = true,
 	},
 	Input = {
-		Text = "Input",
-		Value = "",
-		Finished = false,
-		Numeric = false,
-		ClearTextOnFocus = true,
-		Placeholder = "",
+        Text = "Input",
+        Default = "",
+        Finished = false,
+        Numeric = false,
+        ClearTextOnFocus = true,
+        Placeholder = "",
+        AllowEmpty = true,
+        EmptyReset = "---",
 
-		Callback = function() end,
-		Changed = function() end,
+        Callback = function() end,
+        Changed = function() end,
 
-		Disabled = false,
-		Visible = true,
-	},
+        Disabled = false,
+        Visible = true,
+    },
 	Slider = {
 		Text = "Slider",
 		Default = 0,
@@ -2829,153 +2831,159 @@ do
 	end
 
 	function Funcs:AddInput(Idx, Info)
-		Info = Library:Validate(Info, Templates.Input)
+        Info = Library:Validate(Info, Templates.Input)
 
-		local Groupbox = self
-		local Container = Groupbox.Container
+        local Groupbox = self
+        local Container = Groupbox.Container
 
-		local Input = {
-			Text = Info.Text,
-			Value = Info.Value,
-			Finished = Info.Finished,
-			Numeric = Info.Numeric,
-			ClearTextOnFocus = Info.ClearTextOnFocus,
-			Placeholder = Info.Placeholder,
+        local Input = {
+            Text = Info.Text,
+            Value = Info.Default,
+            Finished = Info.Finished,
+            Numeric = Info.Numeric,
+            ClearTextOnFocus = Info.ClearTextOnFocus,
+            Placeholder = Info.Placeholder,
+            AllowEmpty = Info.AllowEmpty,
+            EmptyReset = Info.EmptyReset,
 
-			Tooltip = Info.Tooltip,
-			DisabledTooltip = Info.DisabledTooltip,
-			TooltipTable = nil,
+            Tooltip = Info.Tooltip,
+            DisabledTooltip = Info.DisabledTooltip,
+            TooltipTable = nil,
 
-			Callback = Info.Callback,
-			Changed = Info.Changed,
+            Callback = Info.Callback,
+            Changed = Info.Changed,
 
-			Disabled = Info.Disabled,
-			Visible = Info.Visible,
+            Disabled = Info.Disabled,
+            Visible = Info.Visible,
 
-			Type = "Input",
-		}
+            Type = "Input",
+        }
 
-		local Holder = New("Frame", {
-			BackgroundTransparency = 1,
-			Size = UDim2.new(1, 0, 0, 39),
-			Visible = Input.Visible,
-			Parent = Container,
-		})
+        local Holder = New("Frame", {
+            BackgroundTransparency = 1,
+            Size = UDim2.new(1, 0, 0, 39),
+            Visible = Input.Visible,
+            Parent = Container,
+        })
 
-		local Label = New("TextLabel", {
-			BackgroundTransparency = 1,
-			Size = UDim2.new(1, 0, 0, 14),
-			Text = Input.Text,
-			TextSize = 14,
-			TextXAlignment = Enum.TextXAlignment.Left,
-			Parent = Holder,
-		})
+        local Label = New("TextLabel", {
+            BackgroundTransparency = 1,
+            Size = UDim2.new(1, 0, 0, 14),
+            Text = Input.Text,
+            TextSize = 14,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            Parent = Holder,
+        })
 
-		local Box = New("TextBox", {
-			AnchorPoint = Vector2.new(0, 1),
-			BackgroundColor3 = "MainColor",
-			BorderColor3 = "OutlineColor",
-			BorderSizePixel = 1,
-			ClearTextOnFocus = not Input.Disabled and Input.ClearTextOnFocus,
-			PlaceholderText = Input.Placeholder,
-			Position = UDim2.fromScale(0, 1),
-			Size = UDim2.new(1, 0, 0, 21),
-			Text = Input.Value,
-			TextEditable = not Input.Disabled,
-			TextScaled = true,
-			TextXAlignment = Enum.TextXAlignment.Left,
-			Parent = Holder,
-		})
+        local Box = New("TextBox", {
+            AnchorPoint = Vector2.new(0, 1),
+            BackgroundColor3 = "MainColor",
+            BorderColor3 = "OutlineColor",
+            BorderSizePixel = 1,
+            ClearTextOnFocus = not Input.Disabled and Input.ClearTextOnFocus,
+            PlaceholderText = Input.Placeholder,
+            Position = UDim2.fromScale(0, 1),
+            Size = UDim2.new(1, 0, 0, 21),
+            Text = Input.Value,
+            TextEditable = not Input.Disabled,
+            TextScaled = true,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            Parent = Holder,
+        })
 
-		New("UIPadding", {
-			PaddingBottom = UDim.new(0, 3),
-			PaddingLeft = UDim.new(0, 8),
-			PaddingRight = UDim.new(0, 8),
-			PaddingTop = UDim.new(0, 4),
-			Parent = Box,
-		})
+        New("UIPadding", {
+            PaddingBottom = UDim.new(0, 3),
+            PaddingLeft = UDim.new(0, 8),
+            PaddingRight = UDim.new(0, 8),
+            PaddingTop = UDim.new(0, 4),
+            Parent = Box,
+        })
 
-		function Input:UpdateColors()
-			Label.TextTransparency = Input.Disabled and 0.8 or 0
-			Box.TextTransparency = Input.Disabled and 0.8 or 0
-		end
+        function Input:UpdateColors()
+            Label.TextTransparency = Input.Disabled and 0.8 or 0
+            Box.TextTransparency = Input.Disabled and 0.8 or 0
+        end
 
-		function Input:OnChanged(Func)
-			Input.Changed = Func
-		end
+        function Input:OnChanged(Func)
+            Input.Changed = Func
+        end
 
-		function Input:SetValue(Text)
-			if Info.MaxLength and #Text > Info.MaxLength then
-				Text = Text:sub(1, Info.MaxLength)
-			end
+        function Input:SetValue(Text)
+            if not Input.AllowEmpty and Trim(Text) == "" then
+                Text = Input.EmptyReset
+            end
 
-			if Input.Numeric then
-				if #Text > 0 and not tonumber(Text) then
-					Text = Input.Value
-				end
-			end
+            if Info.MaxLength and #Text > Info.MaxLength then
+                Text = Text:sub(1, Info.MaxLength)
+            end
 
-			Input.Value = Text
-			Box.Text = Text
+            if Input.Numeric then
+                if #Text > 0 and not tonumber(Text) then
+                    Text = Input.Value
+                end
+            end
 
-			if not Input.Disabled then
-				Library:SafeCallback(Input.Callback, Input.Value)
-				Library:SafeCallback(Input.Changed, Input.Value)
-			end
-		end
+            Input.Value = Text
+            Box.Text = Text
 
-		function Input:SetDisabled(Disabled: boolean)
-			Input.Disabled = Disabled
+            if not Input.Disabled then
+                Library:SafeCallback(Input.Callback, Input.Value)
+                Library:SafeCallback(Input.Changed, Input.Value)
+            end
+        end
 
-			if Input.TooltipTable then
-				Input.TooltipTable.Disabled = Input.Disabled
-			end
+        function Input:SetDisabled(Disabled: boolean)
+            Input.Disabled = Disabled
 
-			Box.ClearTextOnFocus = not Input.Disabled and Input.ClearTextOnFocus
-			Box.TextEditable = not Input.Disabled
-			Input:UpdateColors()
-		end
+            if Input.TooltipTable then
+                Input.TooltipTable.Disabled = Input.Disabled
+            end
 
-		function Input:SetVisible(Visible: boolean)
-			Input.Visible = Visible
+            Box.ClearTextOnFocus = not Input.Disabled and Input.ClearTextOnFocus
+            Box.TextEditable = not Input.Disabled
+            Input:UpdateColors()
+        end
 
-			Holder.Visible = Input.Visible
-			Groupbox:Resize()
-		end
+        function Input:SetVisible(Visible: boolean)
+            Input.Visible = Visible
 
-		function Input:SetText(Text: string)
-			Input.Text = Text
-			Label.Text = Text
-		end
+            Holder.Visible = Input.Visible
+            Groupbox:Resize()
+        end
 
-		if Input.Finished then
-			Box.FocusLost:Connect(function(Enter)
-				if not Enter then
-					return
-				end
+        function Input:SetText(Text: string)
+            Input.Text = Text
+            Label.Text = Text
+        end
 
-				Input:SetValue(Box.Text)
-			end)
-		else
-			Box:GetPropertyChangedSignal("Text"):Connect(function()
-				Input:SetValue(Box.Text)
-			end)
-		end
+        if Input.Finished then
+            Box.FocusLost:Connect(function(Enter)
+                if not Enter then
+                    return
+                end
 
-		if typeof(Input.Tooltip) == "string" or typeof(Input.DisabledTooltip) == "string" then
-			Input.TooltipTable = Library:AddTooltip(Input.Tooltip, Input.DisabledTooltip, Box)
-			Input.TooltipTable.Disabled = Input.Disabled
-		end
+                Input:SetValue(Box.Text)
+            end)
+        else
+            Box:GetPropertyChangedSignal("Text"):Connect(function()
+                Input:SetValue(Box.Text)
+            end)
+        end
 
-		Groupbox:Resize()
+        if typeof(Input.Tooltip) == "string" or typeof(Input.DisabledTooltip) == "string" then
+            Input.TooltipTable = Library:AddTooltip(Input.Tooltip, Input.DisabledTooltip, Box)
+            Input.TooltipTable.Disabled = Input.Disabled
+        end
 
-		Input.Holder = Holder
-		table.insert(Groupbox.Elements, Input)
+        Groupbox:Resize()
 
-		Options[Idx] = Input
+        Input.Holder = Holder
+        table.insert(Groupbox.Elements, Input)
 
-		return Input
-	end
+        Options[Idx] = Input
+
+        return Input
+    end
 
 	function Funcs:AddSlider(Idx, Info)
 		Info = Library:Validate(Info, Templates.Slider)
