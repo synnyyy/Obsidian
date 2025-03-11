@@ -1223,7 +1223,6 @@ function Library:Unload()
 
     Library.Unloaded = true
     ScreenGui:Destroy()
-    getgenv().Library = nil
 end
 
 local CheckIcon = Library:GetIcon("check")
