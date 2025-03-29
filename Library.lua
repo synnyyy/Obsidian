@@ -51,11 +51,11 @@ local Library = {
 	Toggles = Toggles,
 	Options = Options,
 
-	NotifySide = "Right",
+	NotifySide = "Left",
 	ShowCustomCursor = true,
 	ForceCheckbox = false,
 	ShowToggleFrameInKeybinds = true,
-	NotifyOnError = false,
+	NotifyOnError = true,
 
 	CantDragForced = false,
 
