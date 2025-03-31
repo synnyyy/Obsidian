@@ -4316,8 +4316,8 @@ function Library:CreateWindow(WindowInfo)
 
 			WarningBox = New("Frame", {
 				AutomaticSize = Enum.AutomaticSize.Y,
-				BackgroundColor3 = Color3.fromRGB(255, 204, 77),
-				BorderColor3 = Color3.fromRGB(255, 191, 0), 
+				BackgroundColor3 = Color3.fromRGB(127, 95, 0),
+				BorderColor3 = Color3.fromRGB(204, 153, 0), 
 				BorderMode = Enum.BorderMode.Inset,
 				BorderSizePixel = 1,
 				Position = UDim2.fromOffset(0, 6),
