@@ -4345,7 +4345,7 @@ function Library:CreateWindow(WindowInfo)
 
 			New("UIStroke", {
 				ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual,
-				Color = Color3.fromRGB(169, 0, 0),
+				Color = Color3.fromRGB(153, 115, 0),
 				LineJoinMode = Enum.LineJoinMode.Miter,
 				Parent = WarningTitle,
 			})
