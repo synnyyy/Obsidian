@@ -4337,11 +4337,12 @@ function Library:CreateWindow(WindowInfo)
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 0, 14),
 				Text = "",
-				TextColor3 = Color3.fromRGB(255, 50, 50),
+				TextColor3 = Color3.fromRGB(204, 153, 0), 
 				TextSize = 14,
 				TextXAlignment = Enum.TextXAlignment.Left,
 				Parent = WarningBox,
 			})
+
 			New("UIStroke", {
 				ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual,
 				Color = Color3.fromRGB(169, 0, 0),
