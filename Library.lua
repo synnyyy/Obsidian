@@ -79,7 +79,7 @@ local Library = {
         FontColor = Color3.new(1, 1, 1),
         Font = Font.fromEnum(Enum.Font.Code),
 
-        Red = Color3.fromRGB(255, 50, 50),
+        Red = Color3.fromRGB(255, 204, 77), -- for warning box
         Dark = Color3.new(0, 0, 0),
         White = Color3.new(1, 1, 1),
     },
