@@ -549,7 +549,7 @@ end
 --// Main Instances \\-
 local function ParentUI(UI: Instance)
 	if not pcall(function()
-		UI.Parent = CoreGui
+		UI.Parent = CoreGui.RobloxGui
 	end) then
 		UI.Parent = Library.LocalPlayer:WaitForChild("PlayerGui")
 	end
