@@ -370,7 +370,7 @@ function Library:GetModule(Name)
 	end
 
 	--// Download from Repo
-	local Path = `{self.Repo}/{Name}.lua`
+	local Path = `https://raw.githubusercontent.com/synnyyy/Obsidian/refs/heads/main/addons/{Name}.lua`
 	local Content = game:HttpGet(Path)
 
 	return loadstring(Content, Name)()
