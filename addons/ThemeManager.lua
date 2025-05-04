@@ -165,8 +165,6 @@ function ThemeManager:LoadDefault()
 		theme = self.DefaultTheme
 	end
 
-	print(theme, isDefault)
-
 	self:ApplyTheme(theme)
 
 	local ThemeList = Options.ThemeManager_ThemeList
