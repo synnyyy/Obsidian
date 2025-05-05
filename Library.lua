@@ -76,7 +76,7 @@ local Library = {
 
 	NotifySide = "Left",
 	ShowCustomCursor = true,
-	ForceCheckbox = false,
+	ForceCheckbox = isfile("RiftAssets/ForceCheckboxes.txt"),
 	ShowToggleFrameInKeybinds = true,
 	NotifyOnError = true,
 
