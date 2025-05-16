@@ -189,7 +189,7 @@ local Templates = {
 		AutoShow = true,
 		Center = true,
 		Resizable = true,
-		FillScreen = false,
+		FillScreen = true,
 		CornerRadius = 4,
 		NotifySide = "Left",
 		ShowCustomCursor = true,
@@ -314,6 +314,11 @@ function Library:GetUserThumbnailAsync(UserId, ThumbnailType)
 	return Players:GetUserThumbnailAsync(UserId, ThumbnailType, ThumbnailSize)
 end
 
+function Library:ReportError(Message: string)
+	if not self.NotifyOnError then return end
+	self:Notify(Message)
+end
+
 --// Asset interface
 function Library:SetAssetsFolder(Path)
 	self.AssetsFolder = Path
@@ -361,8 +366,17 @@ function Library:GetAsset(Name)
 	if not isfile(Path) then
 		self:DownloadAsset(Name)
 	end
-
-	return getcustomasset(Path)
+	
+	--// getcustomasset
+	local Success, Response = pcall(getcustomasset, Path)
+	
+	--// Error reporter
+	if not Success then
+		self:ReportError(`Unable to read: {Path}\n{Response}`)
+		return "rbxassetid://0" 
+	end
+	
+	return Response
 end
 
 function Library:GetModule(Name)
@@ -903,9 +917,7 @@ function Library:SafeCallback(Func: (...any) -> ...any, ...: any)
 	--// Print error
 	task.defer(error, Response .. " - " .. Traceback)
 	
-	if Library.NotifyOnError then
-		Library:Notify(Response)
-	end
+	self:ReportError(Response)
 end
 
 function Library:MakeDraggable(UI: GuiObject, DragFrame: GuiObject, IgnoreToggled: boolean?, IsMainWindow: boolean?)
