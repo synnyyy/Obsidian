@@ -310,7 +310,7 @@ else
 end
 
 function Library:GetUserThumbnailAsync(UserId, ThumbnailType)
-	local ThumbnailSize = Enum.ThumbnailSize.Size180x180
+	local ThumbnailSize = Enum.ThumbnailSize.Size100x100
 	return Players:GetUserThumbnailAsync(UserId, ThumbnailType, ThumbnailSize)
 end
 
@@ -785,8 +785,10 @@ local ScreenGui = New("ScreenGui", {
 	DisplayOrder = 999,
 	ResetOnSpawn = false,
 	SafeAreaCompatibility = Enum.SafeAreaCompatibility.None,
-	ScreenInsets = Enum.ScreenInsets.None
+	ScreenInsets = Enum.ScreenInsets.None,
+	OnTopOfCoreBlur = true
 })
+
 ParentUI(ScreenGui)
 ScreenGui.DescendantRemoving:Connect(function(Instance)
 	Library:RemoveFromRegistry(Instance)
