@@ -33,7 +33,7 @@ if typeof(copyfunction) == "function" then
 end
 
 local SaveManager = {} do
-    SaveManager.Folder = "RiftInternalSettings"
+    SaveManager.Folder = "ObsidianLibSettings"
     SaveManager.SubFolder = ""
     SaveManager.Ignore = {}
     SaveManager.Library = nil
@@ -232,6 +232,7 @@ local SaveManager = {} do
         if (not name) then
             return false, "no config file is selected"
         end
+
         SaveManager:CheckFolderTree()
 
         local file = self.Folder .. "/settings/" .. name .. ".json"
@@ -239,20 +240,38 @@ local SaveManager = {} do
             file = self.Folder .. "/settings/" .. self.SubFolder .. "/" .. name .. ".json"
         end
 
-        if not isfile(file) then return false, "invalid file" end
+        if not isfile(file) then
+            return false, "invalid file"
+        end
 
         local success, decoded = pcall(httpService.JSONDecode, httpService, readfile(file))
-        if not success then return false, "decode error" end
+        if not success then
+            return false, "decode error"
+        end
 
-        for _, option in pairs(decoded.objects) do
-            if not option.type then continue end
-            if not self.Parser[option.type] then continue end
+        for _, object in pairs(decoded.objects) do
+            if not object.type or object.type:lower() == "toggle" then
+                continue
+            end
+            if not self.Parser[object.type] then
+                continue
+            end
+            task.spawn(self.Parser[object.type].Load, object.idx, object)
+        end
 
-            task.spawn(self.Parser[option.type].Load, option.idx, option) -- task.spawn() so the config loading wont get stuck.
+        for _, object in pairs(decoded.objects) do
+            if not object.type or object.type:lower() ~= "toggle" then
+                continue
+            end
+            if not self.Parser[object.type] then
+                continue
+            end
+            task.spawn(self.Parser[object.type].Load, object.idx, object)
         end
 
         return true
     end
+
 
     function SaveManager:Delete(name)
         if (not name) then
