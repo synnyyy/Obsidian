@@ -12,7 +12,7 @@ local RunService: RunService = cloneref(game:GetService("RunService"))
 
 --// Module
 local ThemeManager = {
-	Folder = "ThemeManager",
+	Folder = "RiftInternalSettings",
 	Library = nil,
 	IsStudio = RunService:IsStudio(),
 	BuiltInThemes = {
