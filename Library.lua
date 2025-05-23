@@ -4214,7 +4214,7 @@ function Library:Notify(...)
 		Data.Time = Info.Time or 5
 		Data.SoundId = Info.SoundId
 		Data.Steps = Info.Steps
-		Data.Symbol = Info.Symbol or "◆"
+		Data.Symbol = Info.Symbol or "❖"
 	else
 		Data.Description = tostring(Info)
 		Data.Time = select(2, ...) or 5
