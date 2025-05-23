@@ -210,7 +210,7 @@ end
 
 function ThemeManager:SaveCustomTheme(file)
 	if file:gsub(" ", "") == "" then
-		self.Library:Notify("Invalid File Name For Theme (Empty)", 3)
+		self.Library:Notify("There is no file name attached. Please specify a name to continue.", 3)
 		return
 	end
 
@@ -228,14 +228,14 @@ end
 
 function ThemeManager:Delete(name)
 	if (not name) then
-		return false, "No Config File Is Selected"
+		return false, "No config file is selected."
 	end
 
 	local file = self.Folder .. "/themes/" .. name .. ".json"
-	if not isfile(file) then return false, "Invalid File" end
+	if not isfile(file) then return false, "Invalid file." end
 
 	local success = pcall(delfile, file)
-	if not success then return false, "Delete File Error" end
+	if not success then return false, "There was a error while trying to delete this file." end
 
 	return true
 end
