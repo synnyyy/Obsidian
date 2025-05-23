@@ -45,7 +45,6 @@ local ThemeManager = {
 		"Cartoon",
 		"Code",
 		"Fantasy",
-		"FredsHand",
 		"Garamond",
 		"Gotham",
 		"GothamBlack",
