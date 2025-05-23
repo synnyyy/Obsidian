@@ -34,6 +34,8 @@ local ThemeManager = {
 		["Cyberpunk"] 		= { 16, HttpService:JSONDecode([[{"FontColor":"f9f9f9","MainColor":"262335","AccentColor":"00ff9f","BackgroundColor":"1a1a2e","OutlineColor":"413c5e"}]]) },
 		["Oceanic Next"] 	= { 17, HttpService:JSONDecode([[{"FontColor":"d8dee9","MainColor":"1b2b34","AccentColor":"6699cc","BackgroundColor":"16232a","OutlineColor":"343d46"}]]) },
 		["Material"] 		= { 18, HttpService:JSONDecode([[{"FontColor":"eeffff","MainColor":"212121","AccentColor":"82aaff","BackgroundColor":"151515","OutlineColor":"424242"}]]) },
+		["sUNC"] 	        = { 19, HttpService:JSONDecode([[{"MainColor":"161622","FontFace":"Code","AccentColor":"a98ef4","OutlineColor":"28283b","BackgroundColor":"0e0e16","FontColor":"ffffff"}]]) },
+		["Discord Dark"]	= { 20, HttpService:JSONDecode([[{"FontColor":"ffffff","MainColor":"1a1a1e","AccentColor":"5865f2","BackgroundColor":"1a1a1e","OutlineColor":"292a2d","FontFace":"Code"}]]) },
 	},
 	Fonts = {
 		"Antique",
