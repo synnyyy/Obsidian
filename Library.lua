@@ -4275,7 +4275,7 @@ function Library:Notify(...)
 	if Data.Title then
 		Title = New("TextLabel", {
 			BackgroundTransparency = 1,
-			Text = `◆ {Data.Title}`,
+			Text = `{Data.Symbol} {Data.Title}`,
 			TextSize = 15,
 			TextColor3 = "AccentColor",
 			TextXAlignment = Enum.TextXAlignment.Left,
