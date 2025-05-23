@@ -190,7 +190,7 @@ local SaveManager = {} do
     --// Save, Load, Delete, Refresh \\--
     function SaveManager:Save(name)
         if (not name) then
-            return false, "no config file is selected"
+            return false, "No config file is selected."
         end
         SaveManager:CheckFolderTree()
 
@@ -230,7 +230,7 @@ local SaveManager = {} do
 
     function SaveManager:Load(name)
         if (not name) then
-            return false, "no config file is selected"
+            return false, "No config file is selected."
         end
 
         SaveManager:CheckFolderTree()
@@ -241,12 +241,12 @@ local SaveManager = {} do
         end
 
         if not isfile(file) then
-            return false, "invalid file"
+            return false, "Invalid file."
         end
 
         local success, decoded = pcall(httpService.JSONDecode, httpService, readfile(file))
         if not success then
-            return false, "decode error"
+            return false, "There was a error while trying to decode the content."
         end
 
         for _, object in pairs(decoded.objects) do
@@ -275,7 +275,7 @@ local SaveManager = {} do
 
     function SaveManager:Delete(name)
         if (not name) then
-            return false, "no config file is selected"
+            return false, "No config file is selected."
         end
 
         local file = self.Folder .. "/settings/" .. name .. ".json"
@@ -283,10 +283,10 @@ local SaveManager = {} do
             file = self.Folder .. "/settings/" .. self.SubFolder .. "/" .. name .. ".json"
         end
 
-        if not isfile(file) then return false, "invalid file" end
+        if not isfile(file) then return false, "Invalid file." end
 
         local success = pcall(delfile, file)
-        if not success then return false, "delete file error" end
+        if not success then return false, "There was a error while trying to decode the content." end
 
         return true
     end
@@ -374,7 +374,7 @@ local SaveManager = {} do
         if isfile(autoLoadPath) then
             local successRead, name = pcall(readfile, autoLoadPath)
             if not successRead then
-                return self.Library:Notify("Failed to load autoload config: write file error")
+                return self.Library:Notify("Failed to load autoload config: There was a error while trying to create the file.")
             end
 
             local success, err = self:Load(name)
@@ -395,7 +395,7 @@ local SaveManager = {} do
         end
 
         local success = pcall(writefile, autoLoadPath, name)
-        if not success then return false, "write file error" end
+        if not success then return false, "There was a error while trying to create the file." end
 
         return true, ""
     end
@@ -409,7 +409,7 @@ local SaveManager = {} do
         end
 
         local success = pcall(delfile, autoLoadPath)
-        if not success then return false, "delete file error" end
+        if not success then return false, "There was a error while trying to decode the content." end
 
         return true, ""
     end
@@ -420,12 +420,12 @@ local SaveManager = {} do
 
         local section = tab:AddRightGroupbox("Configuration")
 
-        section:AddInput("SaveManager_ConfigName",    { Text = "Config name" })
+        section:AddInput("SaveManager_ConfigName",    { Text = "Config Name" })
         section:AddButton("Create Config", function()
             local name = self.Library.Options.SaveManager_ConfigName.Value
 
             if name:gsub(" ", "") == "" then
-                return self.Library:Notify("Invalid config name (empty)", 2)
+                return self.Library:Notify("Please set a file name to save this theme.", 2)
             end
 
             local success, err = self:Save(name)
@@ -441,7 +441,7 @@ local SaveManager = {} do
 
         section:AddDivider()
 
-        section:AddDropdown("SaveManager_ConfigList", { Text = "Config list", Values = self:RefreshConfigList(), AllowNull = true })
+        section:AddDropdown("SaveManager_ConfigList", { Text = "Config List", Values = self:RefreshConfigList(), AllowNull = true })
         section:AddButton("Load Config", function()
             local name = self.Library.Options.SaveManager_ConfigList.Value
 
