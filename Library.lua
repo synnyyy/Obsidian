@@ -3023,6 +3023,10 @@ do
 
 		table.insert(self.Elements, ImageData)
 
+		function Image:ChangeImage(NewImage)
+			Image.Image = NewImage
+		end
+
 		return Image
 	end
 
