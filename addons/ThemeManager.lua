@@ -150,7 +150,9 @@ function ThemeManager:ApplyTheme(theme)
 			
 			Library.Scheme[idx] =val
 			if not Success then
-				Library.Options[idx]:SetValue(val)
+				pcall(function()
+					Library.Options[idx]:SetValue(val)
+				end)
 			end
 		else
 			Library.Scheme[idx] = val
