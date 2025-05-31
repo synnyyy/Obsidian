@@ -12,7 +12,7 @@ local RunService: RunService = cloneref(game:GetService("RunService"))
 
 --// Module
 local ThemeManager = {
-	Folder = "ThemeManager",
+	Folder = "RiftInternalSettings",
 	Library = nil,
 	CurrentThemeScheme = nil,
 	IsStudio = RunService:IsStudio(),
@@ -127,10 +127,10 @@ function ThemeManager:ApplyTheme(theme)
 	local Library = self.Library
 
 	if not data then return end
-	
+
 	local scheme = data[2]
 	self.CurrentThemeScheme = scheme
-	
+
 	for idx, val in pairs(customThemeData or scheme) do
 		if idx == "VideoLink" then
 			continue
@@ -141,10 +141,16 @@ function ThemeManager:ApplyTheme(theme)
 				Library.Options[idx]:SetValue(val)
 			end
 		elseif typeof(val) == "string" then
-			Library.Scheme[idx] = Color3.fromHex(val)
-
-			if Library.Options[idx] then
-				Library.Options[idx]:SetValueRGB(Color3.fromHex(val))
+			local Success = pcall(function()
+				val = Color3.fromHex(val)
+				if Library.Options[idx] then
+					Library.Options[idx]:SetValueRGB(val)
+				end
+			end)
+			
+			Library.Scheme[idx] =val
+			if not Success then
+				Library.Options[idx]:SetValue(val)
 			end
 		else
 			Library.Scheme[idx] = val
@@ -159,7 +165,7 @@ function ThemeManager:ThemeUpdate()
 	local ThemeScheme = self.CurrentThemeScheme
 	local Scheme = Library.Scheme
 	local Options = Library.Options
-	
+
 	local Fields = { 
 		"FontColor", 
 		"MainColor", 
@@ -170,13 +176,13 @@ function ThemeManager:ThemeUpdate()
 		"BackgroundImage",
 		"WindowGlow"
 	}
-	
+
 	for _, field in pairs(Fields) do
 		if Options and Options[field] then
 			Scheme[field] = Options[field].Value
 		end
 	end
-	
+
 	--// Transparency toggle with BG Image
 	local Trans = ThemeScheme.AfterImageTransparency
 	local BackgroundImage = Scheme.BackgroundImageEnabled
@@ -223,7 +229,7 @@ function ThemeManager:LoadDefault()
 	elseif BuiltInThemes[self.DefaultTheme] then
 		theme = self.DefaultTheme
 	end
-	
+
 	self:ApplyTheme(theme)
 
 	local ThemeList = Options.ThemeManager_ThemeList
@@ -237,8 +243,11 @@ function ThemeManager:SaveDefault(theme)
 end
 
 function ThemeManager:SaveCustomTheme(file)
+	local Library = self.Library
+	local Options = Library.Options
+	
 	if #file:gsub(" ", "") <= 0 then
-		self.Library:Notify("Invalid File Name For Theme (Empty)", 3)
+		Library:Notify("Invalid File Name For Theme (Empty)", 3)
 		return
 	end
 
@@ -255,9 +264,13 @@ function ThemeManager:SaveCustomTheme(file)
 	}
 
 	for _, field in pairs(fields) do
-		theme[field] = self.Library.Options[field].Value:ToHex()
+		local Value = Options[field].Value
+		if typeof(Value) == "Color3" then
+			Value = Value:ToHex()
+		end
+		theme[field] = Value
 	end
-	theme["FontFace"] = self.Library.Options["FontFace"].Value
+	theme["FontFace"] = Library.Options["FontFace"].Value
 
 	writefile(`{self.Folder}/themes/{file}.json`, HttpService:JSONEncode(theme))
 	return
