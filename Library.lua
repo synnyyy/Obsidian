@@ -53,9 +53,6 @@ local Library = {
 	ActiveTab = nil,
 	Tabs = {},
 
-	ForceCheckbox = isfile("RiftAssets/ForceCheckboxes.txt"),
-
-
 	--// Keybinds
 	KeybindFrame = nil,
 	KeybindContainer = nil,
@@ -376,7 +373,10 @@ function Library:LoadCustomAsset(Path: string)
 	--// Error reporter
 	if not Success then
 		self:ReportError(`Unable to read: {Path}\n{Response}`)
+		return
 	end
+	
+	return Response
 end
 
 function Library:GetAsset(Name: string, NoDownload: boolean)
@@ -644,12 +644,11 @@ function Library:UpdateColorsUsingRegistry()
 			local Value
 			if typeof(ColorIdx) == "string" then
 				Value = Scheme[ColorIdx]
-				--print(ColorIdx, Scheme[ColorIdx])
 			elseif typeof(ColorIdx) == "function" then
 				Value = ColorIdx()
 			end
 			
-			if Value then
+			if Value ~= nil then
 				pcall(function()
 					Object[Property] = Value
 				end)
@@ -755,7 +754,7 @@ local function FillInstance(Table: { [string]: any }, Object: GuiObject)
 		local SchemeValue = Scheme[Value]
 		if SchemeValue or typeof(Value) == "function" then
 			ThemeProperties[Key] = Value
-			Value = Scheme[Value] or Value()
+			Value = SchemeValue or Value()
 		end
 
 		if not DPIExclude[Key] then
@@ -3427,8 +3426,6 @@ do
 			TextXAlignment = Enum.TextXAlignment.Left,
 			Parent = Holder,
 		})
-		
-		print(Input.Value)
 
 		New("UIPadding", {
 			PaddingBottom = UDim.new(0, 3),
@@ -4760,7 +4757,6 @@ function Library:CreateWindow(WindowInfo)
 			ZIndex = WindowInfo.ZIndex,
 			Image = function()
 				local Value = Library.Scheme.BackgroundImage
-				print(Value)
 				return Library:ProcessImage(Value)
 			end,
 			ImageTransparency = function()
