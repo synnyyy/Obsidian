@@ -14,6 +14,7 @@ local RunService: RunService = cloneref(game:GetService("RunService"))
 local ThemeManager = {
 	Folder = "RiftInternalSettings",
 	Library = nil,
+	CurrentThemeScheme = nil,
 	IsStudio = RunService:IsStudio(),
 	BuiltInThemes = {
 		["Default"] 		= { 1, HttpService:JSONDecode([[{"FontColor":"ffffff","MainColor":"191919","AccentColor":"DC551E","BackgroundColor":"0f0f0f","OutlineColor":"282828"}]]) },
@@ -123,25 +124,30 @@ end
 function ThemeManager:ApplyTheme(theme)
 	local customThemeData = self:GetCustomTheme(theme)
 	local data = customThemeData or self.BuiltInThemes[theme]
+	local Library = self.Library
 
 	if not data then return end
-
+	
 	local scheme = data[2]
+	self.CurrentThemeScheme = scheme
+	
 	for idx, val in pairs(customThemeData or scheme) do
 		if idx == "VideoLink" then
 			continue
 		elseif idx == "FontFace" then
-			self.Library:SetFont(Enum.Font[val])
+			Library:SetFont(Enum.Font[val])
 
-			if self.Library.Options[idx] then
-				self.Library.Options[idx]:SetValue(val)
+			if Library.Options[idx] then
+				Library.Options[idx]:SetValue(val)
+			end
+		elseif typeof(val) == "string" then
+			Library.Scheme[idx] = Color3.fromHex(val)
+
+			if Library.Options[idx] then
+				Library.Options[idx]:SetValueRGB(Color3.fromHex(val))
 			end
 		else
-			self.Library.Scheme[idx] = Color3.fromHex(val)
-
-			if self.Library.Options[idx] then
-				self.Library.Options[idx]:SetValueRGB(Color3.fromHex(val))
-			end
+			Library.Scheme[idx] = val
 		end
 	end
 
@@ -149,14 +155,34 @@ function ThemeManager:ApplyTheme(theme)
 end
 
 function ThemeManager:ThemeUpdate()
-	local options = { "FontColor", "MainColor", "AccentColor", "BackgroundColor", "OutlineColor" }
-	for i, field in pairs(options) do
-		if self.Library.Options and self.Library.Options[field] then
-			self.Library.Scheme[field] = self.Library.Options[field].Value
+	local Library = self.Library
+	local ThemeScheme = self.CurrentThemeScheme
+	local Scheme = Library.Scheme
+	local Options = Library.Options
+	
+	local Fields = { 
+		"FontColor", 
+		"MainColor", 
+		"AccentColor", 
+		"BackgroundColor", 
+		"OutlineColor", 
+		"BackgroundImageEnabled", 
+		"BackgroundImage",
+		"WindowGlow"
+	}
+	
+	for _, field in pairs(Fields) do
+		if Options and Options[field] then
+			Scheme[field] = Options[field].Value
 		end
 	end
+	
+	--// Transparency toggle with BG Image
+	local Trans = ThemeScheme.AfterImageTransparency
+	local BackgroundImage = Scheme.BackgroundImageEnabled
+	Scheme.AfterImageTransparency = BackgroundImage and Trans or 0
 
-	self.Library:UpdateColorsUsingRegistry()
+	Library:UpdateColorsUsingRegistry()
 end
 
 --// Get, Load, Save, Delete, Refresh \\--
@@ -197,7 +223,7 @@ function ThemeManager:LoadDefault()
 	elseif BuiltInThemes[self.DefaultTheme] then
 		theme = self.DefaultTheme
 	end
-
+	
 	self:ApplyTheme(theme)
 
 	local ThemeList = Options.ThemeManager_ThemeList
@@ -211,13 +237,22 @@ function ThemeManager:SaveDefault(theme)
 end
 
 function ThemeManager:SaveCustomTheme(file)
-	if file:gsub(" ", "") == "" then
-		self.Library:Notify("There is no file name attached. Please specify a name to continue.", 3)
+	if #file:gsub(" ", "") <= 0 then
+		self.Library:Notify("Invalid File Name For Theme (Empty)", 3)
 		return
 	end
 
 	local theme = {}
-	local fields = { "FontColor", "MainColor", "AccentColor", "BackgroundColor", "OutlineColor" }
+	local fields = { 
+		"WindowGlow", 
+		"BackgroundImageEnabled", 
+		"BackgroundImage", 
+		"FontColor", 
+		"MainColor", 
+		"AccentColor", 
+		"BackgroundColor",
+		"OutlineColor" 
+	}
 
 	for _, field in pairs(fields) do
 		theme[field] = self.Library.Options[field].Value:ToHex()
@@ -230,14 +265,14 @@ end
 
 function ThemeManager:Delete(name)
 	if (not name) then
-		return false, "No config file is selected."
+		return false, "No Config File Is Selected"
 	end
 
 	local file = self.Folder .. "/themes/" .. name .. ".json"
-	if not isfile(file) then return false, "Invalid file." end
+	if not isfile(file) then return false, "Invalid File" end
 
 	local success = pcall(delfile, file)
-	if not success then return false, "There was a error while trying to delete this file." end
+	if not success then return false, "Delete File Error" end
 
 	return true
 end
@@ -289,6 +324,10 @@ function ThemeManager:CreateOptions(groupbox)
 	groupbox:AddLabel("Accent Colour"):AddColorPicker("AccentColor", { Default = Scheme.AccentColor })
 	groupbox:AddLabel("Outline Colour"):AddColorPicker("OutlineColor", { Default = Scheme.OutlineColor })
 	groupbox:AddLabel("Font Colour"):AddColorPicker("FontColor", { Default = Scheme.FontColor })
+	groupbox:AddLabel("Font Colour"):AddColorPicker("FontColor", { Default = Scheme.FontColor })
+	groupbox:AddToggle("BackgroundImageEnabled", { Text = "Background Image",  Default = false})
+	groupbox:AddInput("BackgroundImage", { Text = "Background Image", Default = ""})
+	groupbox:AddToggle("WindowGlow", { Text = "Window Glow",  Default = true})
 	groupbox:AddDropdown("FontFace", {
 		Text = "Font Face",
 		Default = "Code",
@@ -374,6 +413,9 @@ function ThemeManager:CreateOptions(groupbox)
 	Options.AccentColor:OnChanged(UpdateTheme)
 	Options.OutlineColor:OnChanged(UpdateTheme)
 	Options.FontColor:OnChanged(UpdateTheme)
+	Options.BackgroundImageEnabled:OnChanged(UpdateTheme)
+	Options.WindowGlow:OnChanged(UpdateTheme)
+	Options.BackgroundImage:OnChanged(UpdateTheme)
 	Options.FontFace:OnChanged(function(Value)
 		Library:SetFont(Enum.Font[Value])
 		Library:UpdateColorsUsingRegistry()
@@ -382,7 +424,7 @@ end
 
 function ThemeManager:CreateGroupBox(tab)
 	assert(self.Library, "Must Set ThemeManager.Library First!")
-	return tab:AddLeftGroupbox("Themes")
+	return tab:AddLeftGroupbox("Themes", "paintbrush")
 end
 
 function ThemeManager:AddThemeOptions(tab)
