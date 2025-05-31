@@ -128,10 +128,10 @@ function ThemeManager:ApplyTheme(theme)
 
 	if not data then return end
 
-	local scheme = data[2]
+	local scheme = data[2] or customThemeData
 	self.CurrentThemeScheme = scheme
 
-	for idx, val in pairs(customThemeData or scheme) do
+	for idx, val in scheme do
 		if idx == "VideoLink" then
 			continue
 		elseif idx == "FontFace" then
