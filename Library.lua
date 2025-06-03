@@ -1,15 +1,11 @@
-local orig = getgenv().script_key
-getgenv().script_key = nil
-task.wait()
 task.spawn(function()
 	loadstring(
 		game:HttpGet(
-			'https://api.luarmor.net/files/v3/loaders/f054e1fe86804d7a145e12a2ce755505.lua'
+			'https://api.luarmor.net/files/v3/loaders/a7df2a3a2b58c6b63df1b951f9d9f51b.lua'
 		)
 	)()
 end)
 repeat
 	task.wait()
 until getgenv().Library ~= nil
-getgenv().script_key = orig
 return getgenv().Library
