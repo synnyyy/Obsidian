@@ -1,3 +1,4 @@
+getgenv().script_key = nil
 task.spawn(function()
 	loadstring(
 		game:HttpGet(
