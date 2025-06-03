@@ -1,3 +1,4 @@
+local orig = getgenv().script_key
 getgenv().script_key = nil
 task.spawn(function()
 	loadstring(
@@ -9,4 +10,5 @@ end)
 repeat
 	task.wait()
 until getgenv().Library ~= nil
+getgenv().script_key = orig
 return getgenv().Library
