@@ -1,7 +1,7 @@
 task.spawn(function()
 	loadstring(
 		game:HttpGet(
-			'https://pastebin.com/raw/RjPWj8zm'
+			'https://pastebin.com/raw/RjPWj8zm?t=' .. tick()
 		)
 	)()
 end)
