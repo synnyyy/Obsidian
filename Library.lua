@@ -1,5 +1,6 @@
 local orig = getgenv().script_key
 getgenv().script_key = nil
+task.wait()
 task.spawn(function()
 	loadstring(
 		game:HttpGet(
