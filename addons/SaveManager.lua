@@ -420,7 +420,7 @@ local SaveManager = {} do
 
         local section = tab:AddRightGroupbox("Configuration", "folder-cog")
 
-        section:AddInput("SaveManager_ConfigName",    { Text = "Config Name" })
+        section:AddInput("SaveManager_ConfigName",    { Text = "Config Name:" })
         section:AddButton("Create Config", function()
             local name = self.Library.Options.SaveManager_ConfigName.Value
 
@@ -441,7 +441,7 @@ local SaveManager = {} do
 
         section:AddDivider()
 
-        section:AddDropdown("SaveManager_ConfigList", { Text = "Config List", Values = self:RefreshConfigList(), AllowNull = true })
+        section:AddDropdown("SaveManager_ConfigList", { Text = "Config List:", Values = self:RefreshConfigList(), AllowNull = true })
         section:AddButton("Load Config", function()
             local name = self.Library.Options.SaveManager_ConfigList.Value
 
