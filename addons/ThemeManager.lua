@@ -344,14 +344,14 @@ function ThemeManager:CreateOptions(groupbox)
 	groupbox:AddInput("BackgroundImage", { Text = "Background Image:", Default = ""})
 	groupbox:AddToggle("WindowGlow", { Text = "Window Glow",  Default = true})
 	groupbox:AddDropdown("FontFace", {
-		Text = "Font Face",
+		Text = "Font Face:",
 		Default = "Code",
 		Values = Fonts
 	})
 
 	--// Themes list
 	groupbox:AddDivider()
-	groupbox:AddDropdown("ThemeManager_ThemeList", { Text = "Theme List", Values = ThemesArray, Default = 1 })
+	groupbox:AddDropdown("ThemeManager_ThemeList", { Text = "Theme:", Values = ThemesArray, Default = 1 })
 	groupbox:AddButton("Set As Default", function()
 		self:SaveDefault(Options.ThemeManager_ThemeList.Value)
 		Library:Notify(string.format("Set Default Theme To %q", Options.ThemeManager_ThemeList.Value))
@@ -363,7 +363,7 @@ function ThemeManager:CreateOptions(groupbox)
 
 	--// Create theme
 	groupbox:AddDivider()
-	groupbox:AddInput("ThemeManager_CustomThemeName", { Text = "Custom Theme Name" })
+	groupbox:AddInput("ThemeManager_CustomThemeName", { Text = "Custom Theme Name:" })
 	groupbox:AddButton("Create Theme", function() 
 		self:SaveCustomTheme(Options.ThemeManager_CustomThemeName.Value)
 
@@ -373,7 +373,7 @@ function ThemeManager:CreateOptions(groupbox)
 
 	--// Theme manager
 	groupbox:AddDivider()
-	groupbox:AddDropdown("ThemeManager_CustomThemeList", { Text = "Custom Themes", Values = self:ReloadCustomThemes(), AllowNull = true, Default = 1 })
+	groupbox:AddDropdown("ThemeManager_CustomThemeList", { Text = "Custom Themes:", Values = self:ReloadCustomThemes(), AllowNull = true, Default = 1 })
 	groupbox:AddButton("Load Theme", function()
 		local name = Options.ThemeManager_CustomThemeList.Value
 
