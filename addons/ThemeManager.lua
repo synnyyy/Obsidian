@@ -341,7 +341,7 @@ function ThemeManager:CreateOptions(groupbox)
 	groupbox:AddLabel("Font Colour"):AddColorPicker("FontColor", { Default = Scheme.FontColor })
 	groupbox:AddLabel("Font Colour"):AddColorPicker("FontColor", { Default = Scheme.FontColor })
 	groupbox:AddToggle("BackgroundImageEnabled", { Text = "Background Image",  Default = false})
-	groupbox:AddInput("BackgroundImage", { Text = "Background Image", Default = ""})
+	groupbox:AddInput("BackgroundImage", { Text = "Background Image:", Default = ""})
 	groupbox:AddToggle("WindowGlow", { Text = "Window Glow",  Default = true})
 	groupbox:AddDropdown("FontFace", {
 		Text = "Font Face",
