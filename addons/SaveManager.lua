@@ -229,50 +229,46 @@ local SaveManager = {} do
     end
 
     function SaveManager:Load(name)
-        if not name then
+        if (not name) then
             return false, "No config file is selected."
         end
-    
-        self:CheckFolderTree()
-    
+
+        SaveManager:CheckFolderTree()
+
         local file = self.Folder .. "/settings/" .. name .. ".json"
-        if self:CheckSubFolder(true) then
+        if SaveManager:CheckSubFolder(true) then
             file = self.Folder .. "/settings/" .. self.SubFolder .. "/" .. name .. ".json"
         end
-    
+
         if not isfile(file) then
             return false, "Invalid file."
         end
-    
-        local success, data = pcall(httpService.JSONDecode, httpService, readfile(file))
-        if not success or typeof(data) ~= "table" or typeof(data.objects) ~= "table" then
-            return false, "There was an error while trying to decode the content."
+
+        local success, decoded = pcall(httpService.JSONDecode, httpService, readfile(file))
+        if not success then
+            return false, "There was a error while trying to decode the content."
         end
-    
-        local toggles = table.create(#data.objects)
-    
-        for _, object in data.objects do
-            local t = object.type
-            if typeof(t) == "string" then
-                t = t:lower()
-                local parser = self.Parser[t]
-                if parser and typeof(object.idx) == "string" then
-                    if t == "toggle" then
-                        toggles[#toggles + 1] = object
-                    else
-                        parser.Load(object.idx, object)
-                    end
-                end
+
+        for _, object in pairs(decoded.objects) do
+            if not object.type or object.type:lower() == "toggle" then
+                continue
             end
+            if not self.Parser[object.type] then
+                continue
+            end
+            task.spawn(self.Parser[object.type].Load, object.idx, object)
         end
-    
-        for i = 1, #toggles do
-            local object = toggles[i]
-            task.defer(function()
-                self.Parser.toggle.Load(object.idx, object)
-            end)
+
+        for _, object in pairs(decoded.objects) do
+            if not object.type or object.type:lower() ~= "toggle" then
+                continue
+            end
+            if not self.Parser[object.type] then
+                continue
+            end
+            task.spawn(self.Parser[object.type].Load, object.idx, object)
         end
-    
+
         return true
     end
 
