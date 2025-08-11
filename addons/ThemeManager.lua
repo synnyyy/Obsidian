@@ -191,6 +191,7 @@ function ThemeManager:ThemeUpdate()
 	local Trans = 0.95
 	local BackgroundImage = Scheme.BackgroundImageEnabled
 	Scheme.AfterImageTransparency = BackgroundImage and Trans or 0
+	Scheme.BorderSizePixel = BackgroundImage and 0 or 1
 
 	Library:UpdateColorsUsingRegistry()
 end
