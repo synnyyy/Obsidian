@@ -161,7 +161,7 @@ function ThemeManager:ApplyTheme(theme)
             end
         end
     end
-
+	task.wait()
 	self:ThemeUpdate()
 end
 
