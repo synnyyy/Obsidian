@@ -110,8 +110,18 @@ local SaveManager = {} do
 
     function SaveManager:IgnoreThemeSettings()
         self:SetIgnoreIndexes({
-            "BackgroundColor", "MainColor", "AccentColor", "OutlineColor", "FontColor", "FontFace", -- themes
-            "ThemeManager_ThemeList", "ThemeManager_CustomThemeList", "ThemeManager_CustomThemeName", -- themes
+            "BackgroundColor", 
+            "MainColor", 
+            "AccentColor", 
+            "OutlineColor", 
+            "FontColor", 
+            "FontFace",           
+            "BackgroundImageEnabled",
+            "BackgroundImage",        
+            "WindowGlow",              
+            "ThemeManager_ThemeList", 
+            "ThemeManager_CustomThemeList", 
+            "ThemeManager_CustomThemeName"
         })
     end
 
@@ -228,49 +238,55 @@ local SaveManager = {} do
         return true
     end
 
-    function SaveManager:Load(name)
-        if (not name) then
-            return false, "No config file is selected."
-        end
+   function SaveManager:Load(name)
+		if not name then
+			return false, "No config file is selected."
+		end
 
-        SaveManager:CheckFolderTree()
+		self:CheckFolderTree()
 
-        local file = self.Folder .. "/settings/" .. name .. ".json"
-        if SaveManager:CheckSubFolder(true) then
-            file = self.Folder .. "/settings/" .. self.SubFolder .. "/" .. name .. ".json"
-        end
+		local file = self.Folder .. "/settings/" .. name .. ".json"
+		if self:CheckSubFolder(true) then
+			file = self.Folder .. "/settings/" .. self.SubFolder .. "/" .. name .. ".json"
+		end
 
-        if not isfile(file) then
-            return false, "Invalid file."
-        end
+		if not isfile(file) then
+			return false, "Invalid file."
+		end
 
-        local success, decoded = pcall(httpService.JSONDecode, httpService, readfile(file))
-        if not success then
-            return false, "There was a error while trying to decode the content."
-        end
+		local success, data = pcall(httpService.JSONDecode, httpService, readfile(file))
+		if not success or typeof(data) ~= "table" or typeof(data.objects) ~= "table" then
+			return false, "There was an error while trying to decode the content."
+		end
 
-        for _, object in pairs(decoded.objects) do
-            if not object.type or object.type:lower() == "toggle" then
-                continue
-            end
-            if not self.Parser[object.type] then
-                continue
-            end
-            task.spawn(self.Parser[object.type].Load, object.idx, object)
-        end
+		local toggles = table.create(#data.objects)
 
-        for _, object in pairs(decoded.objects) do
-            if not object.type or object.type:lower() ~= "toggle" then
-                continue
-            end
-            if not self.Parser[object.type] then
-                continue
-            end
-            task.spawn(self.Parser[object.type].Load, object.idx, object)
-        end
+		for _, object in data.objects do
+			local t = object.type
+			if typeof(t) == "string" then
+				t = t:lower()
+				local parser = self.Parser[t]
+				if parser and typeof(object.idx) == "string" then
+					if t == "toggle" then
+						if object.Value then
+							toggles[#toggles + 1] = object
+						end
+					else
+						parser.Load(object.idx, object)
+					end
+				end
+			end
+		end
 
-        return true
-    end
+		for i = 1, #toggles do
+			local object = toggles[i]
+			task.defer(function()
+				self.Parser.toggle.Load(object.idx, object)
+			end)
+		end
+
+		return true
+	end
 
 
     function SaveManager:Delete(name)
@@ -512,3 +528,4 @@ local SaveManager = {} do
 end
 
 return SaveManager
+
