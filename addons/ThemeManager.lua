@@ -190,7 +190,10 @@ function ThemeManager:ThemeUpdate()
 
 	--// Transparency toggle with BG Image
 	local Trans = ThemeScheme.AfterImageTransparency
+    print("transparency", Trans)
 	local BackgroundImage = Scheme.BackgroundImageEnabled
+    print("is enabled", BackgroundImage)
+
 	Scheme.AfterImageTransparency = BackgroundImage and Trans or 0
 
 	Library:UpdateColorsUsingRegistry()
@@ -354,7 +357,7 @@ function ThemeManager:CreateOptions(groupbox)
 	--// Themes list
 	groupbox:AddDivider()
 	groupbox:AddDropdown("ThemeManager_ThemeList", { Text = "Theme:", Values = ThemesArray, Default = 1 })
-	groupbox:AddButton("Set As Default", function()
+	groupbox:AddButton("Set as Default", function()
 		self:SaveDefault(Options.ThemeManager_ThemeList.Value)
 		Library:Notify(string.format("Set Default Theme To %q", Options.ThemeManager_ThemeList.Value))
 	end)
@@ -405,7 +408,7 @@ function ThemeManager:CreateOptions(groupbox)
 		Options.ThemeManager_CustomThemeList:SetValues(self:ReloadCustomThemes())
 		Options.ThemeManager_CustomThemeList:SetValue(nil)
 	end)
-	groupbox:AddButton("Set As Default", function()
+	groupbox:AddButton("Set as Default", function()
 		if Options.ThemeManager_CustomThemeList.Value ~= nil and Options.ThemeManager_CustomThemeList.Value ~= "" then
 			self:SaveDefault(Options.ThemeManager_CustomThemeList.Value)
 			Library:Notify(string.format("Set Default Theme To %q", Options.ThemeManager_CustomThemeList.Value))
