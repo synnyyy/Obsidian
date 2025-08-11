@@ -132,32 +132,35 @@ function ThemeManager:ApplyTheme(theme)
 	self.CurrentThemeScheme = scheme
 
 	for idx, val in scheme do
-		if idx == "VideoLink" then
-			continue
-		elseif idx == "FontFace" then
-			Library:SetFont(Enum.Font[val])
+        if idx == "VideoLink" then
+            continue
+        elseif idx == "FontFace" then
+            Library:SetFont(Enum.Font[val])
 
-			if Library.Options[idx] then
-				Library.Options[idx]:SetValue(val)
-			end
-		elseif typeof(val) == "string" then
-			local Success = pcall(function()
-				val = Color3.fromHex(val)
-				if Library.Options[idx] then
-					Library.Options[idx]:SetValueRGB(val)
-				end
-			end)
-			
-			Library.Scheme[idx] =val
-			if not Success then
-				pcall(function()
-					Library.Options[idx]:SetValue(val)
-				end)
-			end
-		else
-			Library.Scheme[idx] = val
-		end
-	end
+            if Library.Options[idx] then
+                Library.Options[idx]:SetValue(val)
+            end
+        elseif typeof(val) == "string" then
+            local Success = pcall(function()
+                val = Color3.fromHex(val)
+                if Library.Options[idx] then
+                    Library.Options[idx]:SetValueRGB(val)
+                end
+            end)
+            
+            Library.Scheme[idx] = val
+            if not Success then
+                pcall(function()
+                    Library.Options[idx]:SetValue(val)
+                end)
+            end
+        else
+            Library.Scheme[idx] = val
+            if Library.Options[idx] then
+                Library.Options[idx]:SetValue(val) 
+            end
+        end
+    end
 
 	self:ThemeUpdate()
 end
