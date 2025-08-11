@@ -188,12 +188,8 @@ function ThemeManager:ThemeUpdate()
 		end
 	end
 
-	--// Transparency toggle with BG Image
-	local Trans = ThemeScheme.AfterImageTransparency
-    print("transparency", Trans)
+	local Trans = 0.95
 	local BackgroundImage = Scheme.BackgroundImageEnabled
-    print("is enabled", BackgroundImage)
-
 	Scheme.AfterImageTransparency = BackgroundImage and Trans or 0
 
 	Library:UpdateColorsUsingRegistry()
