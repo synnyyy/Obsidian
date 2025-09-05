@@ -33,7 +33,7 @@ if typeof(copyfunction) == "function" then
 end
 
 local SaveManager = {} do
-    SaveManager.Folder = "RiftInternalSettings"
+    SaveManager.Folder = "Rift"
     SaveManager.SubFolder = ""
     SaveManager.Ignore = {}
     SaveManager.Library = nil
