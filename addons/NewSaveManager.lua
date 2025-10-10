@@ -366,13 +366,9 @@ local SaveManager = {} do
         return true, content
     end
 
-    function SaveManager:ImportConfig(configData, name)
+    function SaveManager:ImportConfig(configData)
         if not configData or configData == "" then
             return false, "no config data provided"
-        end
-
-        if not name or name == "" then
-            return false, "no config name provided"
         end
 
         -- Validate JSON
@@ -385,16 +381,25 @@ local SaveManager = {} do
             return false, "invalid config format"
         end
 
-        SaveManager:CheckFolderTree()
-
-        local fullPath = self.Folder .. "/settings/" .. name .. ".json"
-        if SaveManager:CheckSubFolder(true) then
-            fullPath = self.Folder .. "/settings/" .. self.SubFolder .. "/" .. name .. ".json"
+        -- Load the config directly without saving to file
+        local optionQueue, toggleQueue = {}, {}
+        for _, obj in pairs(decoded.objects) do
+            if not obj.type or not self.Parser[obj.type] then
+                continue
+            end
+            if obj.type == "Toggle" then
+                table.insert(toggleQueue, obj)
+            else
+                table.insert(optionQueue, obj)
+            end
         end
 
-        local writeSuccess = pcall(writefile, fullPath, configData)
-        if not writeSuccess then
-            return false, "failed to write file"
+        for _, obj in pairs(optionQueue) do
+            task.spawn(self.Parser[obj.type].Load, obj.idx, obj)
+        end
+        task.wait()
+        for _, obj in pairs(toggleQueue) do
+            task.spawn(self.Parser[obj.type].Load, obj.idx, obj)
         end
 
         return true
@@ -615,30 +620,20 @@ local SaveManager = {} do
         section:AddDivider()
 
         -- Import functionality
-        section:AddInput("SaveManager_ImportName", { Text = "Import Name:" })
-        section:AddButton("Import from Clipboard", function()
-            local name = self.Library.Options.SaveManager_ImportName.Value
+        section:AddInput("SaveManager_ImportData", { Text = "Import Data:" })
+        section:AddButton("Import Config", function()
+            local configData = self.Library.Options.SaveManager_ImportData.Value
 
-            if name:gsub(" ", "") == "" then
+            if configData:gsub(" ", "") == "" then
                 return self.Library:Notify({
                     Title = "Warning",
-                    Description = "Invalid config name (empty).",
+                    Description = "No config data provided.",
                     Time = 3,
                     Icon = "triangle-alert"
                 })
             end
 
-            local clipboardSuccess, clipboardData = pcall(getclipboard)
-            if not clipboardSuccess or not clipboardData then
-                return self.Library:Notify({
-                    Title = "Error",
-                    Description = "Failed to get clipboard data.",
-                    Time = 3,
-                    Icon = "x-circle"
-                })
-            end
-
-            local success, err = self:ImportConfig(clipboardData, name)
+            local success, err = self:ImportConfig(configData)
             if not success then
                 return self.Library:Notify({
                     Title = "Error",
@@ -650,12 +645,10 @@ local SaveManager = {} do
 
             self.Library:Notify({
                 Title = "Success",
-                Description = string.format("Imported config %q.", name),
+                Description = "Config imported and applied.",
                 Time = 3,
                 Icon = "circle-check"
             })
-            self.Library.Options.SaveManager_ConfigList:SetValues(self:RefreshConfigList())
-            self.Library.Options.SaveManager_ConfigList:SetValue(nil)
         end)
 
         section:AddDivider()
@@ -703,7 +696,7 @@ local SaveManager = {} do
         self.AutoloadLabel = section:AddLabel("Current Autoload Config: " .. self:GetAutoloadConfig(), true)
 
         -- self:LoadAutoloadConfig()
-        self:SetIgnoreIndexes({ "SaveManager_ConfigList", "SaveManager_ConfigName" })
+        self:SetIgnoreIndexes({ "SaveManager_ConfigList", "SaveManager_ConfigName", "SaveManager_ImportData" })
     end
 
     SaveManager:BuildFolderTree()
