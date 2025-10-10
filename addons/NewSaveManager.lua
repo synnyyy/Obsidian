@@ -615,8 +615,9 @@ local SaveManager = {} do
         section:AddDivider()
 
         -- Import functionality
+        section:AddInput("SaveManager_ImportName", { Text = "Import Name:" })
         section:AddButton("Import from Clipboard", function()
-            local name = self.Library.Options.SaveManager_ConfigName.Value
+            local name = self.Library.Options.SaveManager_ImportName.Value
 
             if name:gsub(" ", "") == "" then
                 return self.Library:Notify({
