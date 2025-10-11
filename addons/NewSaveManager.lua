@@ -335,7 +335,12 @@ local SaveManager = {} do
 
         if (not success) then
             if self.Library then
-                self.Library:Notify("Failed to load config list: " .. tostring(data))
+                self.Library:Notify({
+                    Title = "Error",
+                    Description = "Failed to load config list: " .. tostring(data) .. ".",
+                    Time = 3,
+                    Icon = "x-circle"
+                })
             else
                 warn("Failed to load config list: " .. tostring(data))
             end
@@ -438,15 +443,30 @@ local SaveManager = {} do
         if isfile(autoLoadPath) then
             local successRead, name = pcall(readfile, autoLoadPath)
             if not successRead then
-                return self.Library:Notify("Failed to load autoload config: write file error")
+                return self.Library:Notify({
+                    Title = "Error",
+                    Description = "Failed to load autoload config: write file error.",
+                    Time = 3,
+                    Icon = "x-circle"
+                })
             end
 
             local success, err = self:Load(name)
             if not success then
-                return self.Library:Notify("Failed to load autoload config: " .. err)
+                return self.Library:Notify({
+                    Title = "Error",
+                    Description = "Failed to load autoload config: " .. err .. ".",
+                    Time = 3,
+                    Icon = "x-circle"
+                })
             end
 
-            self.Library:Notify(string.format("Auto loaded config %q", name))
+            self.Library:Notify({
+                Title = "Success",
+                Description = string.format("Auto loaded config %q.", name),
+                Time = 3,
+                Icon = "circle-check"
+            })
         end
     end
 
