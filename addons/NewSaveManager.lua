@@ -700,6 +700,15 @@ local SaveManager = {} do
 
         section:AddButton("Set Autoload", function()
             local name = self.Library.Options.SaveManager_ConfigList.Value
+            
+            if not name then
+                return self.Library:Notify({
+                    Title = "Warning",
+                    Description = "No config selected.",
+                    Time = 3,
+                    Icon = "triangle-alert"
+                })
+            end
 
             local success, err = self:SaveAutoloadConfig(name)
             if not success then
@@ -719,23 +728,39 @@ local SaveManager = {} do
                 Icon = "circle-check"
             })
         end):AddButton("Reset", function()
-            local success, err = self:DeleteAutoLoadConfig()
-            if not success then
-                return self.Library:Notify({
-                    Title = "Error",
-                    Description = "Failed to reset autoload config: " .. err .. ".",
-                    Time = 3,
-                    Icon = "x-circle"
-                })
-            end
-
+            local Part = Instance.new("Part")
             self.Library:Notify({
-                Title = "Success",
-                Description = "Set autoload to none.",
-                Time = 3,
-                Icon = "circle-check"
+                Title = "Confirm Reset",
+                Description = "Are you sure you want to reset autoload?\n\nNo config will load automatically on startup.",
+                Time = Part,
+                Icon = "triangle-alert",
+                Buttons = {
+                    ["Reset"] = function()
+                        local success, err = self:DeleteAutoLoadConfig()
+                        if not success then
+                            Part:Destroy()
+                            return self.Library:Notify({
+                                Title = "Error",
+                                Description = "Failed to reset autoload config: " .. err .. ".",
+                                Time = 3,
+                                Icon = "x-circle"
+                            })
+                        end
+
+                        self.Library:Notify({
+                            Title = "Success",
+                            Description = "Set autoload to none.",
+                            Time = 3,
+                            Icon = "circle-check"
+                        })
+                        SaveManager.AutoloadLabel:SetText("Current autoload config: none")
+                        Part:Destroy()
+                    end,
+                    ["Cancel"] = function()
+                        Part:Destroy()
+                    end,
+                }
             })
-            SaveManager.AutoloadLabel:SetText("Current autoload config: none")
         end)
 
         self.AutoloadLabel = section:AddLabel("Current Autoload Config: " .. self:GetAutoloadConfig(), true)
