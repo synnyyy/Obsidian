@@ -335,7 +335,12 @@ local SaveManager = {} do
 
         if (not success) then
             if self.Library then
-                self.Library:Notify("Failed to load config list: " .. tostring(data))
+                self.Library:Notify({
+                    Title = "Error",
+                    Description = "Failed to load config list: " .. tostring(data) .. ".",
+                    Time = 3,
+                    Icon = "x-circle"
+                })
             else
                 warn("Failed to load config list: " .. tostring(data))
             end
@@ -344,6 +349,65 @@ local SaveManager = {} do
         end
 
         return data
+    end
+
+    --// Import/Export \\--
+    function SaveManager:ExportConfig(name)
+        if not name then
+            return false, "no config file is selected"
+        end
+        SaveManager:CheckFolderTree()
+
+        local file = self.Folder .. "/settings/" .. name .. ".json"
+        if SaveManager:CheckSubFolder(true) then
+            file = self.Folder .. "/settings/" .. self.SubFolder .. "/" .. name .. ".json"
+        end
+
+        if not isfile(file) then return false, "invalid file" end
+
+        local success, content = pcall(readfile, file)
+        if not success then return false, "failed to read file" end
+
+        return true, content
+    end
+
+    function SaveManager:ImportConfig(configData)
+        if not configData or configData == "" then
+            return false, "no config data provided"
+        end
+
+        -- Validate JSON
+        local success, decoded = pcall(httpService.JSONDecode, httpService, configData)
+        if not success then
+            return false, "invalid JSON data"
+        end
+
+        if not decoded.objects or type(decoded.objects) ~= "table" then
+            return false, "invalid config format"
+        end
+
+        -- Load the config directly without saving to file
+        local optionQueue, toggleQueue = {}, {}
+        for _, obj in pairs(decoded.objects) do
+            if not obj.type or not self.Parser[obj.type] then
+                continue
+            end
+            if obj.type == "Toggle" then
+                table.insert(toggleQueue, obj)
+            else
+                table.insert(optionQueue, obj)
+            end
+        end
+
+        for _, obj in pairs(optionQueue) do
+            task.spawn(self.Parser[obj.type].Load, obj.idx, obj)
+        end
+        task.wait()
+        for _, obj in pairs(toggleQueue) do
+            task.spawn(self.Parser[obj.type].Load, obj.idx, obj)
+        end
+
+        return true
     end
 
     --// Auto Load \\--
@@ -379,15 +443,30 @@ local SaveManager = {} do
         if isfile(autoLoadPath) then
             local successRead, name = pcall(readfile, autoLoadPath)
             if not successRead then
-                return self.Library:Notify("Failed to load autoload config: write file error")
+                return self.Library:Notify({
+                    Title = "Error",
+                    Description = "Failed to load autoload config: write file error.",
+                    Time = 3,
+                    Icon = "x-circle"
+                })
             end
 
             local success, err = self:Load(name)
             if not success then
-                return self.Library:Notify("Failed to load autoload config: " .. err)
+                return self.Library:Notify({
+                    Title = "Error",
+                    Description = "Failed to load autoload config: " .. err .. ".",
+                    Time = 3,
+                    Icon = "x-circle"
+                })
             end
 
-            self.Library:Notify(string.format("Auto loaded config %q", name))
+            self.Library:Notify({
+                Title = "Success",
+                Description = string.format("Auto loaded config %q.", name),
+                Time = 3,
+                Icon = "circle-check"
+            })
         end
     end
 
@@ -425,20 +504,35 @@ local SaveManager = {} do
 
         local section = tab:AddRightGroupbox("Configuration", "folder-cog")
 
-        section:AddInput("SaveManager_ConfigName",    { Text = "Config name" })
+        section:AddInput("SaveManager_ConfigName",    { Text = "Config Name:" })
         section:AddButton("Create Config", function()
             local name = self.Library.Options.SaveManager_ConfigName.Value
 
             if name:gsub(" ", "") == "" then
-                return self.Library:Notify("Invalid config name (empty)", 2)
+                return self.Library:Notify({
+                    Title = "Warning",
+                    Description = "Invalid config name (empty).",
+                    Time = 3,
+                    Icon = "triangle-alert"
+                })
             end
 
             local success, err = self:Save(name)
             if not success then
-                return self.Library:Notify("Failed to create config: " .. err)
+                return self.Library:Notify({
+                    Title = "Error",
+                    Description = "Failed to create config: " .. err .. ".",
+                    Time = 3,
+                    Icon = "x-circle"
+                })
             end
 
-            self.Library:Notify(string.format("Created config %q", name))
+            self.Library:Notify({
+                Title = "Success",
+                Description = string.format("Created config %q.", name),
+                Time = 3,
+                Icon = "circle-check"
+            })
 
             self.Library.Options.SaveManager_ConfigList:SetValues(self:RefreshConfigList())
             self.Library.Options.SaveManager_ConfigList:SetValue(nil)
@@ -446,39 +540,121 @@ local SaveManager = {} do
 
         section:AddDivider()
 
-        section:AddDropdown("SaveManager_ConfigList", { Text = "Config list", Values = self:RefreshConfigList(), AllowNull = true })
-        section:AddButton("Load Config", function()
+        section:AddDropdown("SaveManager_ConfigList", { Text = "Config List:", Values = self:RefreshConfigList(), AllowNull = true })
+        section:AddButton("Load", function()
             local name = self.Library.Options.SaveManager_ConfigList.Value
 
             local success, err = self:Load(name)
             if not success then
-                return self.Library:Notify("Failed to load config: " .. err)
+                return self.Library:Notify({
+                    Title = "Error",
+                    Description = "Failed to load config: " .. err .. ".",
+                    Time = 3,
+                    Icon = "x-circle"
+                })
             end
 
-            self.Library:Notify(string.format("Loaded config %q", name))
-        end)
-        section:AddButton("Overwrite Config", function()
+            self.Library:Notify({
+                Title = "Success",
+                Description = string.format("Loaded config %q.", name),
+                Time = 3,
+                Icon = "circle-check"
+            })
+        end):AddButton("Overwrite", function()
             local name = self.Library.Options.SaveManager_ConfigList.Value
 
             local success, err = self:Save(name)
             if not success then
-                return self.Library:Notify("Failed to overwrite config: " .. err)
+                return self.Library:Notify({
+                    Title = "Error",
+                    Description = "Failed to overwrite config: " .. err .. ".",
+                    Time = 3,
+                    Icon = "x-circle"
+                })
             end
 
-            self.Library:Notify(string.format("Overwrote config %q", name))
+            self.Library:Notify({
+                Title = "Success",
+                Description = string.format("Overwrote config %q.", name),
+                Time = 3,
+                Icon = "circle-check"
+            })
         end)
 
-        section:AddButton("Delete Config", function()
+        section:AddButton("Delete", function()
             local name = self.Library.Options.SaveManager_ConfigList.Value
-
-            local success, err = self:Delete(name)
-            if not success then
-                return self.Library:Notify("Failed to delete config: " .. err)
+            
+            if not name then
+                return self.Library:Notify({
+                    Title = "Warning",
+                    Description = "No config selected.",
+                    Time = 3,
+                    Icon = "triangle-alert"
+                })
             end
 
-            self.Library:Notify(string.format("Deleted config %q", name))
-            self.Library.Options.SaveManager_ConfigList:SetValues(self:RefreshConfigList())
-            self.Library.Options.SaveManager_ConfigList:SetValue(nil)
+            local Part = Instance.new("Part")
+            self.Library:Notify({
+                Title = "Confirm Delete",
+                Description = string.format("Are you sure you want to delete config %q?\n\nThis action cannot be undone.", name),
+                Time = Part,
+                Icon = "triangle-alert",
+                Buttons = {
+                    ["Delete"] = function()
+                        local success, err = self:Delete(name)
+                        if not success then
+                            Part:Destroy()
+                            return self.Library:Notify({
+                                Title = "Error",
+                                Description = "Failed to delete config: " .. err .. ".",
+                                Time = 3,
+                                Icon = "x-circle"
+                            })
+                        end
+
+                        self.Library:Notify({
+                            Title = "Success",
+                            Description = string.format("Deleted config %q.", name),
+                            Time = 3,
+                            Icon = "circle-check"
+                        })
+                        self.Library.Options.SaveManager_ConfigList:SetValues(self:RefreshConfigList())
+                        self.Library.Options.SaveManager_ConfigList:SetValue(nil)
+                        Part:Destroy()
+                    end,
+                    ["Cancel"] = function()
+                        Part:Destroy()
+                    end,
+                }
+            })
+        end):AddButton("Export", function()
+            local name = self.Library.Options.SaveManager_ConfigList.Value
+            if not name then
+                return self.Library:Notify({
+                    Title = "Warning",
+                    Description = "No config selected.",
+                    Time = 3,
+                    Icon = "triangle-alert"
+                })
+            end
+
+            local success, data = self:ExportConfig(name)
+            if not success then
+                return self.Library:Notify({
+                    Title = "Error",
+                    Description = "Failed to export config: " .. data .. ".",
+                    Time = 3,
+                    Icon = "x-circle"
+                })
+            end
+
+            setclipboard(data)
+            self.Library:Notify({
+                Title = "Success",
+                Description = string.format("Exported config %q to clipboard.", name),
+                Time = 3,
+                Icon = "circle-check"
+            })
         end)
 
         section:AddButton("Refresh List", function()
@@ -486,31 +662,111 @@ local SaveManager = {} do
             self.Library.Options.SaveManager_ConfigList:SetValue(nil)
         end)
 
-        section:AddButton("Set as Autoload", function()
+        section:AddDivider()
+
+        -- Import functionality
+        section:AddInput("SaveManager_ImportData", { Text = "Import Data:" })
+        section:AddButton("Import Config", function()
+            local configData = self.Library.Options.SaveManager_ImportData.Value
+
+            if configData:gsub(" ", "") == "" then
+                return self.Library:Notify({
+                    Title = "Warning",
+                    Description = "No config data provided.",
+                    Time = 3,
+                    Icon = "triangle-alert"
+                })
+            end
+
+            local success, err = self:ImportConfig(configData)
+            if not success then
+                return self.Library:Notify({
+                    Title = "Error",
+                    Description = "Failed to import config: " .. err .. ".",
+                    Time = 3,
+                    Icon = "x-circle"
+                })
+            end
+
+            self.Library:Notify({
+                Title = "Success",
+                Description = "Config imported and applied.",
+                Time = 3,
+                Icon = "circle-check"
+            })
+        end)
+
+        section:AddDivider()
+
+        section:AddButton("Set Autoload", function()
             local name = self.Library.Options.SaveManager_ConfigList.Value
+            
+            if not name then
+                return self.Library:Notify({
+                    Title = "Warning",
+                    Description = "No config selected.",
+                    Time = 3,
+                    Icon = "triangle-alert"
+                })
+            end
 
             local success, err = self:SaveAutoloadConfig(name)
             if not success then
-                return self.Library:Notify("Failed to set autoload config: " .. err)
+                return self.Library:Notify({
+                    Title = "Error",
+                    Description = "Failed to set autoload config: " .. err .. ".",
+                    Time = 3,
+                    Icon = "x-circle"
+                })
             end
 
             SaveManager.AutoloadLabel:SetText("Current autoload config: " .. name)
-            self.Library:Notify(string.format("Set %q to auto load", name))
-        end)
-        section:AddButton("Reset Autoload", function()
-            local success, err = self:DeleteAutoLoadConfig()
-            if not success then
-                return self.Library:Notify("Failed to set autoload config: " .. err)
-            end
+            self.Library:Notify({
+                Title = "Success",
+                Description = string.format("Set %q to auto load.", name),
+                Time = 3,
+                Icon = "circle-check"
+            })
+        end):AddButton("Reset", function()
+            local Part = Instance.new("Part")
+            self.Library:Notify({
+                Title = "Confirm Reset",
+                Description = "Are you sure you want to reset autoload?\n\nNo config will load automatically on startup.",
+                Time = Part,
+                Icon = "triangle-alert",
+                Buttons = {
+                    ["Reset"] = function()
+                        local success, err = self:DeleteAutoLoadConfig()
+                        if not success then
+                            Part:Destroy()
+                            return self.Library:Notify({
+                                Title = "Error",
+                                Description = "Failed to reset autoload config: " .. err .. ".",
+                                Time = 3,
+                                Icon = "x-circle"
+                            })
+                        end
 
-            self.Library:Notify("Set autoload to none")
-            SaveManager.AutoloadLabel:SetText("Current autoload config: none")
+                        self.Library:Notify({
+                            Title = "Success",
+                            Description = "Set autoload to none.",
+                            Time = 3,
+                            Icon = "circle-check"
+                        })
+                        SaveManager.AutoloadLabel:SetText("Current autoload config: none")
+                        Part:Destroy()
+                    end,
+                    ["Cancel"] = function()
+                        Part:Destroy()
+                    end,
+                }
+            })
         end)
 
         self.AutoloadLabel = section:AddLabel("Current Autoload Config: " .. self:GetAutoloadConfig(), true)
 
         -- self:LoadAutoloadConfig()
-        self:SetIgnoreIndexes({ "SaveManager_ConfigList", "SaveManager_ConfigName" })
+        self:SetIgnoreIndexes({ "SaveManager_ConfigList", "SaveManager_ConfigName", "SaveManager_ImportData" })
     end
 
     SaveManager:BuildFolderTree()
