@@ -583,25 +583,50 @@ local SaveManager = {} do
 
         section:AddButton("Delete", function()
             local name = self.Library.Options.SaveManager_ConfigList.Value
-
-            local success, err = self:Delete(name)
-            if not success then
+            
+            if not name then
                 return self.Library:Notify({
-                    Title = "Error",
-                    Description = "Failed to delete config: " .. err .. ".",
+                    Title = "Warning",
+                    Description = "No config selected.",
                     Time = 3,
-                    Icon = "x-circle"
+                    Icon = "triangle-alert"
                 })
             end
 
+            local Part = Instance.new("Part")
             self.Library:Notify({
-                Title = "Success",
-                Description = string.format("Deleted config %q.", name),
-                Time = 3,
-                Icon = "circle-check"
+                Title = "Confirm Delete",
+                Description = string.format("Are you sure you want to delete config %q?\n\nThis action cannot be undone.", name),
+                Time = Part,
+                Icon = "triangle-alert",
+                Buttons = {
+                    ["Delete"] = function()
+                        local success, err = self:Delete(name)
+                        if not success then
+                            Part:Destroy()
+                            return self.Library:Notify({
+                                Title = "Error",
+                                Description = "Failed to delete config: " .. err .. ".",
+                                Time = 3,
+                                Icon = "x-circle"
+                            })
+                        end
+
+                        self.Library:Notify({
+                            Title = "Success",
+                            Description = string.format("Deleted config %q.", name),
+                            Time = 3,
+                            Icon = "circle-check"
+                        })
+                        self.Library.Options.SaveManager_ConfigList:SetValues(self:RefreshConfigList())
+                        self.Library.Options.SaveManager_ConfigList:SetValue(nil)
+                        Part:Destroy()
+                    end,
+                    ["Cancel"] = function()
+                        Part:Destroy()
+                    end,
+                }
             })
-            self.Library.Options.SaveManager_ConfigList:SetValues(self:RefreshConfigList())
-            self.Library.Options.SaveManager_ConfigList:SetValue(nil)
         end):AddButton("Export", function()
             local name = self.Library.Options.SaveManager_ConfigList.Value
             if not name then
