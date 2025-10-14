@@ -593,14 +593,14 @@ local SaveManager = {} do
                 })
             end
 
-           local Part = Instance.new("Part")
+            local Part = Instance.new("Part")
             self.Library:Notify({
                 Title = "Confirm Delete",
                 Description = string.format("Are you sure you want to delete config %q?\n\nThis action cannot be undone.", name),
                 Time = Part,
                 Icon = "triangle-alert",
                 Buttons = {
-                    { Name = "Delete", Func = function()
+                    ["Delete"] = function()
                         local success, err = self:Delete(name)
                         if not success then
                             Part:Destroy()
@@ -618,17 +618,15 @@ local SaveManager = {} do
                             Time = 3,
                             Icon = "circle-check"
                         })
-
                         self.Library.Options.SaveManager_ConfigList:SetValues(self:RefreshConfigList())
                         self.Library.Options.SaveManager_ConfigList:SetValue(nil)
                         Part:Destroy()
-                    end },
-                    { Name = "Cancel", Func = function()
+                    end,
+                    ["Cancel"] = function()
                         Part:Destroy()
-                    end },
+                    end,
                 }
             })
-
         end):AddButton("Export", function()
             local name = self.Library.Options.SaveManager_ConfigList.Value
             if not name then
@@ -737,7 +735,7 @@ local SaveManager = {} do
                 Time = Part,
                 Icon = "triangle-alert",
                 Buttons = {
-                    { Name = "Reset", Func = function()
+                    ["Reset"] = function()
                         local success, err = self:DeleteAutoLoadConfig()
                         if not success then
                             Part:Destroy()
@@ -757,13 +755,12 @@ local SaveManager = {} do
                         })
                         SaveManager.AutoloadLabel:SetText("Current autoload config: none")
                         Part:Destroy()
-                    end },
-                    { Name = "Cancel", Func = function()
+                    end,
+                    ["Cancel"] = function()
                         Part:Destroy()
-                    end },
+                    end,
                 }
             })
-
         end)
 
         self.AutoloadLabel = section:AddLabel("Current Autoload Config: " .. self:GetAutoloadConfig(), true)
