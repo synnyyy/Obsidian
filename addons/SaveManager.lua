@@ -121,7 +121,8 @@ local SaveManager = {} do
             "WindowGlow",              
             "ThemeManager_ThemeList", 
             "ThemeManager_CustomThemeList", 
-            "ThemeManager_CustomThemeName"
+            "ThemeManager_CustomThemeName",
+            "ForceCheckbox"
         })
     end
 
