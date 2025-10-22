@@ -329,6 +329,7 @@ function ThemeManager:CreateOptions(groupbox)
 	local Fonts = self.Fonts
 	local Library = self.Library
 	local Scheme = Library.Scheme
+	local Toggles = Library.Toggles
 	local Options = Library.Options
 
 	local ThemesArray = {}
