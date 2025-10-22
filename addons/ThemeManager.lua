@@ -179,7 +179,7 @@ function ThemeManager:ThemeUpdate()
 		"OutlineColor", 
 		"BackgroundImageEnabled", 
 		"BackgroundImage",
-		"WindowGlow"
+		"WindowGlow",
 	}
 
 	for _, field in pairs(Fields) do
@@ -430,8 +430,8 @@ function ThemeManager:CreateOptions(groupbox)
 	Options.AccentColor:OnChanged(UpdateTheme)
 	Options.OutlineColor:OnChanged(UpdateTheme)
 	Options.FontColor:OnChanged(UpdateTheme)
-	Options.BackgroundImageEnabled:OnChanged(UpdateTheme)
-	Options.WindowGlow:OnChanged(UpdateTheme)
+	Toggles.BackgroundImageEnabled:OnChanged(UpdateTheme)
+	Toggles.WindowGlow:OnChanged(UpdateTheme)
 	Options.BackgroundImage:OnChanged(UpdateTheme)
 	Options.FontFace:OnChanged(function(Value)
 		Library:SetFont(Enum.Font[Value])
